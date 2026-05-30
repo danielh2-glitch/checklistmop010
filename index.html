@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MXT-MOP-010 | Retiro Planta de Emergencia 300 kW</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#eef2f7;--surface:#ffffff;--surface2:#f5f7fa;--border:#cdd8e6;
+    --accent:#0056b8;--accent2:#0071e3;--yellow:#8a5a00;--green:#006b35;
+    --red:#c0392b;--text:#1a2638;--text-dim:#6b8099;--text-bright:#0d1a2a;
+    --mono:'Share Tech Mono',monospace;--sans:'Barlow Condensed',sans-serif;--body:'Barlow',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;padding:20px;}
+
+  .header{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:16px 24px;margin-bottom:4px;border-radius:4px 4px 0 0;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .header-meta{display:flex;flex-direction:column;gap:4px;}
+  .project-name{font-family:var(--sans);font-weight:700;font-size:14px;color:var(--text-bright);letter-spacing:.5px;}
+  .meta-row{display:flex;gap:24px;font-family:var(--mono);font-size:11px;color:var(--text-dim);}
+  .meta-row span b{color:var(--accent);}
+  .header-badge{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .mop-tag{background:var(--accent);color:#fff;font-family:var(--sans);font-weight:900;font-size:13px;padding:3px 10px;border-radius:2px;letter-spacing:1px;}
+  .rev-tag{font-family:var(--mono);font-size:10px;color:var(--text-dim);}
+
+  .banner{background:linear-gradient(135deg,#fdf3dc,#fae8b0);border:1px solid #e6d080;border-top:none;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border-radius:0 0 4px 4px;}
+  .banner-title{font-family:var(--sans);font-weight:900;font-size:13px;letter-spacing:2px;color:#7a4f00;text-transform:uppercase;}
+  .banner-right{font-family:var(--mono);font-size:11px;color:var(--text-dim);}
+
+  .action-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:4px;padding:8px 16px;font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s,transform .1s;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-print{background:var(--accent);color:#fff;}
+  .btn-print:hover{background:#004499;}
+  .btn-save{background:var(--green);color:#fff;}
+  .btn-save:hover{background:#005228;}
+  .btn-open{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent);box-shadow:none;}
+  .btn-open:hover{background:#ddeeff;}
+
+  .stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .stat-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .stat-value{font-family:var(--sans);font-weight:700;font-size:20px;color:var(--text-bright);}
+  .stat-value.green{color:var(--green);}.stat-value.yellow{color:var(--yellow);}.stat-value.blue{color:var(--accent);}.stat-value.red{color:var(--red);}.stat-value.purple{color:#6b3fa0;}
+
+  .progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .progress-label{font-family:var(--mono);font-size:11px;color:var(--text-dim);white-space:nowrap;}
+  .progress-track{flex:1;height:6px;background:#d0dae6;border-radius:3px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+  .progress-fill.good{background:linear-gradient(90deg,var(--green),#00a851);}
+  .progress-fill.warn{background:linear-gradient(90deg,var(--yellow),#e6900a);}
+  .progress-fill.bad{background:linear-gradient(90deg,var(--red),#e74c3c);}
+  .progress-pct{font-family:var(--mono);font-size:12px;white-space:nowrap;min-width:40px;text-align:right;}
+
+  .section-header{display:grid;grid-template-columns:50px 30px 1fr 80px 80px 80px 80px 80px 80px;background:#1a3a5c;border:1px solid var(--border);border-bottom:none;border-radius:4px 4px 0 0;margin-top:16px;overflow:hidden;}
+  .col-head{font-family:var(--mono);font-size:10px;color:#a8c4e0;letter-spacing:1px;text-transform:uppercase;padding:8px 6px;border-right:1px solid #2a4a6c;text-align:center;}
+  .col-head:first-child{text-align:left;padding-left:10px;}
+  .col-head:last-child{border-right:none;}
+
+  .group{border:1px solid var(--border);border-top:none;overflow:hidden;}
+  .group:last-child{border-radius:0 0 4px 4px;margin-bottom:24px;}
+  .group-title{border-top:2px solid;border-bottom:1px solid var(--border);}
+  .group-title-inner{font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;display:flex;align-items:center;gap:10px;}
+  .group-title-inner::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+  /* Group color themes */
+  .g-blue .group-title{background:linear-gradient(90deg,#dce8f7,#e8f0fb);border-top-color:var(--accent);}
+  .g-blue .group-title-inner{color:var(--accent);}
+  .g-blue .group-title-inner::before{background:var(--accent);}
+  .g-red .group-title{background:linear-gradient(90deg,#fdecea,#fdf3f2);border-top-color:var(--red);}
+  .g-red .group-title-inner{color:var(--red);}
+  .g-red .group-title-inner::before{background:var(--red);}
+  .g-yellow .group-title{background:linear-gradient(90deg,#fdf3dc,#fef8ec);border-top-color:#c98a00;}
+  .g-yellow .group-title-inner{color:#7a4f00;}
+  .g-yellow .group-title-inner::before{background:#c98a00;}
+  .g-green .group-title{background:linear-gradient(90deg,#e0f7ea,#edfaf3);border-top-color:var(--green);}
+  .g-green .group-title-inner{color:var(--green);}
+  .g-green .group-title-inner::before{background:var(--green);}
+  .g-purple .group-title{background:linear-gradient(90deg,#f0eafa,#f7f0fd);border-top-color:#6b3fa0;}
+  .g-purple .group-title-inner{color:#6b3fa0;}
+  .g-purple .group-title-inner::before{background:#6b3fa0;}
+
+  .row{display:grid;grid-template-columns:50px 30px 1fr 80px 80px 80px 80px 80px 80px;border-bottom:1px solid #e4ecf4;cursor:pointer;align-items:stretch;background:var(--surface);transition:background .15s;}
+  .row:nth-child(even){background:var(--surface2);}
+  .row:last-child{border-bottom:none;}
+  .row:hover{background:#ddeeff;}
+  .row.done{background:#e8f7ee!important;}.row.done:hover{background:#d4f0e0!important;}
+  .row.fail{background:#fdecea!important;}.row.fail:hover{background:#f9d8d5!important;}
+
+  .cell{padding:7px 6px;border-right:1px solid #e4ecf4;display:flex;align-items:center;font-size:11px;}
+  .cell:last-child{border-right:none;}
+  .cell-item{font-family:var(--mono);font-size:10px;color:var(--text-dim);justify-content:center;}
+  .cell-chk{justify-content:center;padding:4px;}
+  .chk{width:20px;height:20px;border:1.5px solid var(--border);border-radius:3px;background:#fff;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+  .chk-inner{font-size:12px;font-weight:900;line-height:1;}
+  .row.done .chk{background:var(--green);border-color:var(--green);}
+  .row.fail .chk{background:var(--red);border-color:var(--red);}
+  .row.done .chk .chk-inner,.row.fail .chk .chk-inner{color:#fff;}
+  .cell-desc{font-size:11px;color:var(--text);line-height:1.3;}
+  .row.done .desc-text{text-decoration:line-through;color:var(--text-dim);}
+  .row.fail .desc-text{color:var(--red);font-weight:500;}
+  .cell-type{justify-content:center;font-family:var(--mono);font-size:10px;}
+  .cell-type.op{color:var(--accent2);}
+  .cell-type.seg{color:var(--red);}
+  .cell-time{justify-content:center;font-family:var(--mono);font-size:10px;color:var(--yellow);}
+  .cell-hora{justify-content:center;font-family:var(--mono);font-size:10px;color:var(--text);}
+  .cell-input-hora{font-family:var(--mono);font-size:10px;background:transparent;border:none;border-bottom:1px dashed var(--border);width:100%;text-align:center;color:var(--text);outline:none;padding:1px 2px;}
+  .cell-input-hora:focus{border-bottom-color:var(--accent);background:#eef6ff;}
+  .cell-delta{justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;}
+  .delta-ok{color:var(--green);}.delta-warn{color:var(--yellow);}.delta-late{color:var(--red);}
+
+  .metricas-section{background:var(--surface);border:1px solid var(--border);border-left:3px solid #6b3fa0;border-radius:4px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .metricas-title{font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:2px;color:#6b3fa0;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #6b3fa0;}
+  .metricas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .metrica-card{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;}
+  .metrica-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .metrica-value{font-family:var(--sans);font-weight:700;font-size:20px;}
+  .metrica-value.green{color:var(--green);}.metrica-value.red{color:var(--red);}.metrica-value.yellow{color:var(--yellow);}.metrica-value.purple{color:#6b3fa0;}
+
+  .fallas-section{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .fallas-title{font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:2px;color:var(--red);text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red);display:flex;align-items:center;gap:10px;}
+  .fallas-hint{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400;}
+  .falla-headers{display:grid;grid-template-columns:80px 1fr 150px 32px;gap:8px;margin-bottom:4px;}
+  .falla-col-hd{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .fallas-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+  .falla-row{display:grid;grid-template-columns:80px 1fr 150px 32px;gap:8px;align-items:center;}
+  .falla-input{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 8px;font-family:var(--body);font-size:12px;color:var(--text);outline:none;width:100%;}
+  .falla-input:focus{border-color:var(--red);background:#fff;}
+  .falla-select{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;}
+  .btn-del-falla{background:transparent;border:1px solid #e0b0b0;border-radius:3px;color:var(--red);cursor:pointer;font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .btn-del-falla:hover{background:#fdecea;}
+  .btn-add-falla{background:transparent;border:1px dashed var(--red);border-radius:3px;color:var(--red);font-family:var(--mono);font-size:11px;padding:5px 14px;cursor:pointer;letter-spacing:1px;}
+  .btn-add-falla:hover{background:#fdecea;}
+
+  .firma-section{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;}
+  .firma-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--accent);}
+  .firma-title{font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;}
+  .firma-actions{display:flex;gap:8px;}
+  .btn-firma-add{background:var(--accent);color:#fff;border:none;border-radius:3px;padding:5px 12px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;gap:5px;}
+  .btn-firma-add:hover{background:#004499;}
+  .firma-top-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+  .firma-field{display:flex;flex-direction:column;gap:4px;}
+  .firma-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .firma-input{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 8px;font-family:var(--body);font-size:12px;color:var(--text-bright);outline:none;width:100%;}
+  .firma-input:focus{border-color:var(--accent);background:#fff;}
+  .firmas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px;}
+  .firma-block{display:flex;flex-direction:column;gap:6px;border:1px solid var(--border);border-radius:4px;padding:10px 12px;background:var(--surface2);position:relative;animation:fadeIn .2s ease both;}
+  .firma-block-header{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  .firma-block-title-input{font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;background:transparent;border:none;border-bottom:1.5px dashed #a0bcd8;outline:none;flex:1;padding:2px 0;min-width:0;}
+  .firma-block-title-input:focus{border-bottom-color:var(--accent);background:#f0f6ff;}
+  .btn-del-firma{background:transparent;border:none;color:#aac;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex-shrink:0;}
+  .btn-del-firma:hover{color:var(--red);}
+  .firma-block-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
+  .firma-canvas{border:1.5px solid var(--border);border-radius:4px;background:#fff;cursor:crosshair;width:100%;height:80px;display:block;}
+  .firma-canvas-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+  .firma-clear{align-self:flex-start;background:transparent;border:1px solid var(--border);border-radius:3px;padding:3px 10px;font-family:var(--mono);font-size:10px;color:var(--text-dim);cursor:pointer;}
+  .firma-clear:hover{border-color:var(--accent);color:var(--accent);}
+  .firma-obs-wrap{display:flex;flex-direction:column;gap:4px;}
+  .firma-obs{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:8px 10px;font-family:var(--body);font-size:12px;color:var(--text);outline:none;resize:vertical;min-height:60px;width:100%;}
+  .firma-obs:focus{border-color:var(--accent);background:#fff;}
+
+  .footer{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text-dim);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .footer-ref{color:var(--accent);}
+
+  @media(max-width:900px){
+    .firmas-grid{grid-template-columns:1fr;}
+    .firma-top-grid{grid-template-columns:1fr 1fr;}
+    .firma-block-fields{grid-template-columns:1fr 1fr;}
+    .stats-bar{grid-template-columns:repeat(3,1fr);}
+    .metricas-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .action-bar{display:none!important;}
+    .btn-firma-add,.btn-del-firma,.firma-clear,.btn-add-falla,.btn-del-falla{display:none!important;}
+    .stats-bar{display:grid!important;}
+    .progress-wrap{display:flex!important;}
+    .metricas-section{display:block!important;}
+    .stat-value.green{color:#006b35!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .stat-value.red{color:#c0392b!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .stat-value.yellow{color:#8a5a00!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .stat-value.blue{color:#0056b8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .stat-value.purple{color:#6b3fa0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .progress-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .progress-track{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#d0dae6!important;}
+    .row.done{background:#e8f7ee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .row.fail{background:#fdecea!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .group-title{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .section-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .metrica-value.green{color:#006b35!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .metrica-value.red{color:#c0392b!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .delta-ok{color:#006b35!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .delta-late{color:#c0392b!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .delta-warn{color:#8a5a00!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .group{animation:fadeIn .25s ease both;}
+</style>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0AZLXFzEbbrWNN19fTXvnWl_YCi4Q36E",
+      authDomain: "checklist---mxt-mop-010.firebaseapp.com",
+      databaseURL: "https://checklist---mxt-mop-010-default-rtdb.firebaseio.com",
+      projectId: "checklist---mxt-mop-010",
+      storageBucket: "checklist---mxt-mop-010.firebasestorage.app",
+      messagingSenderId: "23916136550",
+      appId: "1:23916136550:web:b97b7ddec45388d1de85a7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const MOP_ID = "mop010";
+    let _ignoreNextUpdate = false;
+
+    function setSyncStatus(status) {
+      const el = document.getElementById('sync-status');
+      if (!el) return;
+      if (status === 'ok')       { el.textContent = '● Sincronizado';      el.style.color = '#006b35'; }
+      else if (status === 'saving') { el.textContent = '↑ Guardando...';   el.style.color = '#8a5a00'; }
+      else if (status === 'live')   { el.textContent = '⟳ Tiempo real';    el.style.color = '#0056b8'; }
+      else if (status === 'error')  { el.textContent = '✕ Sin conexión';   el.style.color = '#c0392b'; }
+      else                          { el.textContent = '○ Conectando...';  el.style.color = '#6b8099'; }
+    }
+
+    // ── APPLY REMOTE DATA TO DOM ──
+    function applyData(data) {
+      if (!data) return;
+
+      // Actividades
+      if (data.actividades && window._groups) {
+        window._groups.forEach(g => g.items.forEach(item => {
+          const key = item.id.replace(/\./g, '_');
+          const a = data.actividades[key];
+          if (!a) return;
+          item.state  = a.estado || 'none';
+          item.hReal  = a.hReal  || '';
+          const row = document.querySelector(`.row[data-id="${item.id}"]`);
+          if (!row) return;
+          row.classList.remove('done','fail');
+          const ci = row.querySelector('.chk-inner');
+          if (item.state === 'done')      { row.classList.add('done'); ci.textContent = '✓'; }
+          else if (item.state === 'fail') { row.classList.add('fail'); ci.textContent = '✕'; }
+          else                            { ci.textContent = ''; }
+          const inp = row.querySelector('.cell-input-hora');
+          if (inp && document.activeElement !== inp) inp.value = item.hReal;
+          window._updateDelta && window._updateDelta(item);
+        }));
+      }
+
+      // Fallas
+      if (data.fallas !== undefined) {
+        window._fallas.length = 0;
+        window._fallaId = 0;
+        if (data.fallas) {
+          Object.values(data.fallas).forEach(f => {
+            window._fallas.push({ _id: window._fallaId++, itemId: f.itemId, desc: f.desc, status: f.status });
+          });
+        }
+        window._renderFallas && window._renderFallas();
+      }
+
+      // Meta
+      if (data.meta) {
+        const hi  = document.getElementById('f-hinicio');
+        const ht  = document.getElementById('f-htermino');
+        const obs = document.getElementById('f-obs');
+        if (hi  && document.activeElement !== hi  && data.meta.hinicio)       hi.value  = data.meta.hinicio;
+        if (ht  && document.activeElement !== ht  && data.meta.htermino)      ht.value  = data.meta.htermino;
+        if (obs && document.activeElement !== obs && data.meta.observaciones) obs.value = data.meta.observaciones;
+      }
+
+      window._updateAll && window._updateAll();
+    }
+
+    // ── REALTIME LISTENER ── (escucha cambios de otros dispositivos en tiempo real)
+    setSyncStatus('connecting');
+    onValue(ref(db, MOP_ID), (snapshot) => {
+      if (_ignoreNextUpdate) { _ignoreNextUpdate = false; return; }
+      applyData(snapshot.val());
+      setSyncStatus('live');
+      setTimeout(() => setSyncStatus('ok'), 1500);
+    });
+
+    // ── SAVE HELPERS ──
+    window.fbSaveActs = function() {
+      if (!window._groups) return;
+      setSyncStatus('saving');
+      const allActs = {};
+      window._groups.forEach(g => g.items.forEach(i => {
+        allActs[i.id.replace(/\./g,'_')] = { estado: i.state, hReal: i.hReal };
+      }));
+      _ignoreNextUpdate = true;
+      update(ref(db, MOP_ID + '/actividades'), allActs)
+        .then(() => setSyncStatus('ok'))
+        .catch(() => { setSyncStatus('error'); _ignoreNextUpdate = false; });
+    };
+
+    window.fbSaveFallas = function() {
+      setSyncStatus('saving');
+      const obj = {};
+      window._fallas.forEach((f,i) => { obj['f'+i] = { itemId:f.itemId, desc:f.desc, status:f.status }; });
+      _ignoreNextUpdate = true;
+      set(ref(db, MOP_ID + '/fallas'), obj)
+        .then(() => setSyncStatus('ok'))
+        .catch(() => { setSyncStatus('error'); _ignoreNextUpdate = false; });
+    };
+
+    window.fbSaveMeta = function() {
+      setSyncStatus('saving');
+      const meta = {
+        hinicio:       document.getElementById('f-hinicio')?.value  || '',
+        htermino:      document.getElementById('f-htermino')?.value || '',
+        observaciones: document.getElementById('f-obs')?.value      || '',
+      };
+      _ignoreNextUpdate = true;
+      update(ref(db, MOP_ID + '/meta'), meta)
+        .then(() => setSyncStatus('ok'))
+        .catch(() => { setSyncStatus('error'); _ignoreNextUpdate = false; });
+    };
+
+    // ── WATCH META FIELDS ──
+    window.addEventListener('load', () => {
+      ['f-hinicio','f-htermino','f-obs'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          let t;
+          el.addEventListener('input', () => {
+            clearTimeout(t);
+            t = setTimeout(() => window.fbSaveMeta(), 800);
+          });
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-meta">
+    <div class="project-name">Proyecto: Modernización del Sistema de Respaldo Eléctrico – Corporativo Coca Cola</div>
+    <div class="meta-row">
+      <span>Fecha: <b>30/05/2026</b></span>
+      <span>Ref. No.: <b>MXT-MOP-010</b></span>
+      <span>Ejecución: <b>Sáb 30/05/2026</b></span>
+    </div>
+  </div>
+  <div class="header-badge">
+    <div class="mop-tag">MOP</div>
+    <div class="rev-tag">REV 01</div>
+  </div>
+</div>
+<div class="banner">
+  <div class="banner-title">Desconexión y Maniobra de Retiro de Planta de Emergencia de 300 kW</div>
+  <div class="banner-right">IV. Secuencia Lógica Operativa Paso a Paso</div>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-open" onclick="document.getElementById('file-input').click()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    Abrir Reporte
+  </button>
+  <input type="file" id="file-input" accept=".json" style="display:none" onchange="loadReport(event)">
+  <button class="btn btn-save" onclick="saveReport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Guardar Reporte
+  </button>
+  <button class="btn btn-print" onclick="window.print()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Imprimir
+  </button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value blue" id="stat-total">0</div></div>
+  <div class="stat-card"><div class="stat-label">Completadas</div><div class="stat-value green" id="stat-done">0</div></div>
+  <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-value yellow" id="stat-pending">0</div></div>
+  <div class="stat-card"><div class="stat-label">Con Falla</div><div class="stat-value red" id="stat-fail">0</div></div>
+  <div class="stat-card"><div class="stat-label">Cumplimiento</div><div class="stat-value purple" id="stat-cump">—</div></div>
+  <div class="stat-card"><div class="stat-label">Δ Tiempo Prom.</div><div class="stat-value" id="stat-delta">—</div></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">AVANCE</div>
+  <div class="progress-track"><div class="progress-fill good" id="prog-fill" style="width:0%"></div></div>
+  <div class="progress-pct" id="prog-pct" style="color:var(--accent)">0%</div>
+</div>
+
+<div class="section-header">
+  <div class="col-head">ITEM</div>
+  <div class="col-head">EST</div>
+  <div class="col-head" style="text-align:left">Detalles de la Actividad</div>
+  <div class="col-head">Tipo</div>
+  <div class="col-head">T.Est.</div>
+  <div class="col-head">H.Plan</div>
+  <div class="col-head">H.Real</div>
+  <div class="col-head">H.Final</div>
+  <div class="col-head">Δ min</div>
+</div>
+<div id="checklist"></div>
+
+<div class="metricas-section">
+  <div class="metricas-title">V. Métricas de Cumplimiento de Horario</div>
+  <div class="metricas-grid">
+    <div class="metrica-card"><div class="metrica-label">Con hora real registrada</div><div class="metrica-value purple" id="m-registradas">0</div></div>
+    <div class="metrica-card"><div class="metrica-label">En tiempo (≤ 0 min)</div><div class="metrica-value green" id="m-enTiempo">0</div></div>
+    <div class="metrica-card"><div class="metrica-label">Con retraso (> 0 min)</div><div class="metrica-value red" id="m-tarde">0</div></div>
+    <div class="metrica-card"><div class="metrica-label">Retraso acumulado</div><div class="metrica-value red" id="m-acum">—</div></div>
+  </div>
+</div>
+
+<div class="fallas-section">
+  <div class="fallas-title">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    VI. Registro de Fallas
+    <span class="fallas-hint">— ✕ en una actividad la agrega automáticamente</span>
+  </div>
+  <div class="falla-headers">
+    <div class="falla-col-hd">Ítem</div>
+    <div class="falla-col-hd">Descripción de la Falla</div>
+    <div class="falla-col-hd">Estatus</div>
+    <div></div>
+  </div>
+  <div class="fallas-list" id="fallas-list"></div>
+  <button class="btn-add-falla" onclick="addFalla()">+ Agregar falla manual</button>
+</div>
+
+<div class="firma-section">
+  <div class="firma-section-header">
+    <div class="firma-title">VII. Conformidad y Firmas</div>
+    <div class="firma-actions">
+      <button class="btn-firma-add" onclick="addFirmaBlock()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar firma
+      </button>
+    </div>
+  </div>
+  <div class="firma-top-grid">
+    <div class="firma-field"><label class="firma-label">Fecha de Ejecución</label><input class="firma-input" id="f-fecha" value="30/05/2026"></div>
+    <div class="firma-field"><label class="firma-label">Hora de Inicio</label><input class="firma-input" id="f-hinicio" value="08:00"></div>
+    <div class="firma-field"><label class="firma-label">Hora de Término</label><input class="firma-input" id="f-htermino" placeholder="HH:MM"></div>
+    <div class="firma-field"><label class="firma-label">Número de MOP</label><input class="firma-input" id="f-mop" value="MXT-MOP-010"></div>
+  </div>
+  <div class="firmas-grid" id="firmas-grid"></div>
+  <div class="firma-obs-wrap">
+    <label class="firma-label">Observaciones Generales</label>
+    <textarea class="firma-obs" id="f-obs" placeholder="Notas adicionales, incidencias o condiciones especiales…" rows="3"></textarea>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MXT-MOP-010 – DESCONEXIÓN Y MANIOBRA DE RETIRO DE PLANTA DE EMERGENCIA DE 300 kW</span>
+  <span>Proyecto: Modernización del Sistema de Respaldo Eléctrico – Corporativo Coca Cola</span>
+  <span class="footer-ref">Página /</span>
+</div>
+
+<script>
+const groups = [
+  { id:1, title:"1. Verificación de Personal (Protocolo de Seguridad)", color:"g-blue", items:[
+    {id:"1.01",desc:"Arribo de personal y transportes de carga en calle Taine.",tipo:"Operativo",resp:"MAXTEC",hPlan:"08:00",dur:15},
+    {id:"1.02",desc:"Plática de Seguridad y Operativa.",tipo:"Seguridad",resp:"MAXTEC",hPlan:"08:15",dur:15},
+    {id:"1.03",desc:"Registro y Validación de personal operativo en sitio.",tipo:"Seguridad",resp:"MAXTEC",hPlan:"08:30",dur:5},
+    {id:"1.04",desc:"EPP: Uso obligatorio de equipo de seguridad completo.",tipo:"Seguridad",resp:"MAXTEC",hPlan:"08:45",dur:5},
+    {id:"1.05",desc:"Ingreso a cuarto eléctrico en sótano 1 y preparación.",tipo:"Operativo",resp:"MAXTEC",hPlan:"08:50",dur:10},
+  ]},
+  { id:2, title:"2. Shut Down", color:"g-red", items:[
+    {id:"3.01a",desc:"SHUT DOWN",tipo:"Operativo",resp:"OP / COCA COLA",hPlan:"08:00",dur:40},
+    {id:"3.02a",desc:"BLOQUEO Y ETIQUETADO DE INTERRUPTORES.",tipo:"Seguridad",resp:"OP / COCA COLA",hPlan:"08:40",dur:10},
+  ]},
+  { id:3, title:"3. Preliminares para retiro de planta de 300 kW", color:"g-yellow", items:[
+    {id:"3.01",desc:"Retiro de anclajes para liberacion de planta de 300 kW.",tipo:"Operativo",resp:"MAXTEC",hPlan:"08:50",dur:30},
+    {id:"3.02",desc:"Maniobras para retiro de tubería del sistema de escape de la planta de emergencia de 300 kW.",tipo:"Operativo",resp:"MAXTEC",hPlan:"09:20",dur:40},
+    {id:"3.03",desc:"Drenado de tanque de Diesel",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:00",dur:30},
+    {id:"3.04",desc:"Drenado de anticongelante y aceite de planta de emergencia",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:00",dur:60},
+    {id:"3.05",desc:"Desmantelamiento de tubería de suministro de Diesel para liberación de planta de emergencia.",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:30",dur:40},
+    {id:"3.06",desc:"Maniobra para retiro de tanque de Diesel para su disposición final.",tipo:"Operativo",resp:"MAXTEC",hPlan:"11:10",dur:60},
+  ]},
+  { id:4, title:"4. Desconexión de circuito de emergencia en tablero de transferencia planta de 300 kW", color:"g-blue", items:[
+    {id:"4.01",desc:"Verificación de ausencia de voltaje para control de energías residuales.",tipo:"Operativo",resp:"MAXTEC",hPlan:"08:50",dur:10},
+    {id:"4.02",desc:"Desconexión e identificación de fases de circuitos de emergencia y control en el interior del tablero de transferencia.",tipo:"Operativo",resp:"MAXTEC",hPlan:"09:00",dur:60},
+    {id:"4.03",desc:"Desconexión de cables de fuerza y control en caja de conexiones de planta de emergencia existente.",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:00",dur:20},
+    {id:"4.04",desc:"Retiro de charola porta cables para liberación de planta de emergencia existente.",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:20",dur:20},
+  ]},
+  { id:5, title:"5. Maniobras para retiro de planta de emergencia de 300 kW", color:"g-purple", items:[
+    {id:"5.01",desc:"Elevación con apoyo de gatos mecánicos para posicionamiento de tubos y desplazamiento de planta hacia fuera de la base.",tipo:"Operativo",resp:"MAXTEC",hPlan:"10:40",dur:40},
+    {id:"5.02",desc:"Elevación con apoyo de gatos mecánicos para posicionamiento de tortugas en parte inferior de planta de emergencia.",tipo:"Operativo",resp:"MAXTEC",hPlan:"11:20",dur:10},
+    {id:"5.03",desc:"Maniobras por medio de palanca mecánica colocando tortugas en su desplazamiento hasta que el equipo este completamente fuera del cuarto eléctrico.",tipo:"Operativo",resp:"MAXTEC",hPlan:"11:30",dur:10},
+    {id:"5.04",desc:"Maniobras para traslado de planta de emergencia desde el exterior del cuarto eléctrico hacia rampa de acceso de entrada del sótano 1, intercalando hojas de triplay de 19mm para protección de piso.",tipo:"Operativo",resp:"MAXTEC",hPlan:"11:40",dur:30},
+    {id:"5.05",desc:"Maniobra para posicionamiento de plataforma en rampa de acceso por puerta de acceso Taine.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:10",dur:10},
+    {id:"5.06",desc:"Maniobra para posicionamiento de segunda plataforma para apoyo de anclaje a primera unidad.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:20",dur:10},
+    {id:"5.07",desc:"Anclaje: Colocación de gancho de winche de unidad de apoyo a primera unidad.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:30",dur:10},
+    {id:"5.08",desc:"Colocación de cuñas de seguridad a las unidades.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:40",dur:5},
+    {id:"5.09",desc:"Anclaje de polea de reenvío y línea de vida (Tirfor) para jalado de planta de emergencia en rampa de acceso.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:40",dur:30},
+    {id:"5.10",desc:"Cálceo progresivo tras las tortugas durante el avance.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:40",dur:30},
+    {id:"5.11",desc:"Control que deriva en curva de rampa con barretas.",tipo:"Operativo",resp:"MAXTEC",hPlan:"12:40",dur:30},
+    {id:"5.12",desc:"Ascenso de planta de emergencia en plataforma de transporte: Tensión sincronizada Winch-Tirfor.",tipo:"Operativo",resp:"MAXTEC",hPlan:"13:10",dur:30},
+    {id:"5.13",desc:"Elevación con apoyo de gatos mecánicos para retiro de tortugas en parte inferior de planta de emergencia.",tipo:"Operativo",resp:"MAXTEC",hPlan:"13:40",dur:10},
+    {id:"5.14",desc:"Aseguramiento de planta de emergencia por medio de bandas para su transporte a disposición final.",tipo:"Operativo",resp:"MAXTEC",hPlan:"13:50",dur:15},
+    {id:"5.15",desc:"Salida de transporte de carga por calles Taines",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:05",dur:5},
+  ]},
+  { id:6, title:"6. Retiro de tubería de escape y tablero de transferencia", color:"g-green", items:[
+    {id:"6.01",desc:"Maniobra para carga a vehículo de silenciadores para su disposición final.",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:10",dur:20},
+    {id:"6.03",desc:"Maniobra para carga a vehículo de tanque de diesel para su disposición final.",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:30",dur:5},
+    {id:"6.04",desc:"Retiro de protecciones de piso y limpieza final de área.",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:35",dur:5},
+    {id:"6.05",desc:"Retiro de vehículo de maniobras",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:40",dur:10},
+  ]},
+  { id:7, title:"7. Retiro de personal", color:"g-blue", items:[
+    {id:"7.01",desc:"Recolección y retiro de herramienta y equipo de trabajo.",tipo:"Operativo",resp:"MAXTEC",hPlan:"14:50",dur:10},
+    {id:"7.02",desc:"Limpieza final y verificación de área de trabajo.",tipo:"Operativo",resp:"MAXTEC",hPlan:"15:00",dur:10},
+    {id:"7.03",desc:"Retiro de personal de sitio.",tipo:"Operativo",resp:"MAXTEC",hPlan:"15:10",dur:5},
+  ]},
+];
+
+// Compute hFinal from hPlan + dur
+function toMins(t){if(!t||!t.includes(':'))return null;const[h,m]=t.split(':').map(Number);return h*60+m;}
+function fmtTime(mins){return`${String(Math.floor(mins/60)%24).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;}
+function fmtDur(d){return`${String(Math.floor(d/60)).padStart(2,'0')}:${String(d%60).padStart(2,'0')}`;}
+
+groups.forEach(g=>g.items.forEach(item=>{
+  const pm=toMins(item.hPlan);
+  item.hFinal=pm!==null?fmtTime(pm+item.dur):'—';
+  item.durFmt=fmtDur(item.dur);
+  item.state='none'; item.hReal='';
+}));
+window._groups = groups;
+
+// FALLAS
+window._fallas = [];
+window._fallaId = 0;
+const fallas = window._fallas;
+let fallaId = 0;
+window._renderFallas = renderFallas;
+function renderFallas(){
+  const list=document.getElementById('fallas-list');list.innerHTML='';
+  fallas.forEach(f=>{
+    const row=document.createElement('div');row.className='falla-row';
+    row.innerHTML=`
+      <input class="falla-input" value="${f.itemId}" placeholder="Ítem" oninput="fallas.find(x=>x._id==${f._id}).itemId=this.value">
+      <input class="falla-input" value="${f.desc}" placeholder="Descripción" oninput="fallas.find(x=>x._id==${f._id}).desc=this.value">
+      <select class="falla-select" onchange="fallas.find(x=>x._id==${f._id}).status=this.value">
+        <option ${f.status==='Pendiente'?'selected':''}>Pendiente</option>
+        <option ${f.status==='En revisión'?'selected':''}>En revisión</option>
+        <option ${f.status==='Resuelta'?'selected':''}>Resuelta</option>
+        <option ${f.status==='Escalada'?'selected':''}>Escalada</option>
+      </select>
+      <button class="btn-del-falla" onclick="removeFalla(${f._id})">✕</button>`;
+    list.appendChild(row);
+  });
+}
+function saveFallasToFB(){
+  window.fbSaveFallas && window.fbSaveFallas();
+}
+function addFalla(itemId='',desc=''){
+  const newId = fallaId++;
+  window._fallaId = fallaId;
+  fallas.push({_id:newId,itemId,desc,status:'Pendiente'});
+  renderFallas();
+  saveFallasToFB();
+}
+function removeFalla(id){
+  fallas=fallas.filter(f=>f._id!==id);
+  renderFallas();
+  saveFallasToFB();
+}
+
+// RENDER
+const container=document.getElementById('checklist');
+groups.forEach(g=>{
+  const groupDiv=document.createElement('div');groupDiv.className=`group ${g.color}`;
+  const titleDiv=document.createElement('div');titleDiv.className='group-title';
+  titleDiv.innerHTML=`<div class="group-title-inner">${g.title}</div>`;
+  groupDiv.appendChild(titleDiv);
+  g.items.forEach(item=>{
+    const row=document.createElement('div');row.className='row';row.dataset.id=item.id;
+    const isOp=item.tipo==='Operativo';
+    row.innerHTML=`
+      <div class="cell cell-item">${item.id}</div>
+      <div class="cell cell-chk"><div class="chk"><span class="chk-inner"></span></div></div>
+      <div class="cell cell-desc"><span class="desc-text">${item.desc}</span></div>
+      <div class="cell cell-type ${isOp?'op':'seg'}" style="font-size:9px">${item.tipo}</div>
+      <div class="cell cell-time">${item.durFmt}</div>
+      <div class="cell cell-hora">${item.hPlan}</div>
+      <div class="cell cell-hora" style="padding:2px 4px">
+        <input class="cell-input-hora" data-id="${item.id}" placeholder="—" value="${item.hReal}" onclick="event.stopPropagation()" oninput="setHReal('${item.id}',this.value)">
+      </div>
+      <div class="cell cell-hora">${item.hFinal}</div>
+      <div class="cell cell-delta" id="delta-${item.id}">—</div>`;
+    row.querySelector('.cell-chk').addEventListener('click',e=>{e.stopPropagation();cycleState(row,item);});
+    row.addEventListener('click',()=>cycleState(row,item));
+    groupDiv.appendChild(row);
+  });
+  container.appendChild(groupDiv);
+});
+updateStats();
+
+function cycleState(row,item){
+  const next=item.state==='none'?'done':item.state==='done'?'fail':'none';
+  item.state=next;row.classList.remove('done','fail');
+  const ci=row.querySelector('.chk-inner');
+  if(next==='done'){row.classList.add('done');ci.textContent='✓';}
+  else if(next==='fail'){row.classList.add('fail');ci.textContent='✕';
+    if(!fallas.find(f=>f.itemId===item.id))addFalla(item.id,item.desc);
+  }else{ci.textContent='';fallas=fallas.filter(f=>!(f.itemId===item.id&&f.desc===item.desc));renderFallas();}
+  updateAll();
+  window.fbSaveActs && window.fbSaveActs();
+}
+
+function setHReal(id,val){
+  groups.forEach(g=>g.items.forEach(item=>{if(item.id===id){item.hReal=val;updateDelta(item);}}));
+  updateMetricas();
+}
+
+window._updateDelta = updateDelta;
+function updateDelta(item){
+  const el=document.getElementById('delta-'+item.id);
+  if(!item.hReal||!item.hReal.includes(':')){el.textContent='—';el.className='cell cell-delta';return;}
+  const plan=toMins(item.hPlan),real=toMins(item.hReal);
+  if(plan===null||real===null){el.textContent='—';return;}
+  const d=real-plan;
+  el.textContent=(d>0?'+':'')+d;
+  el.className='cell cell-delta '+(d<=0?'delta-ok':d<=15?'delta-warn':'delta-late');
+}
+
+function updateAll(){updateStats();updateMetricas();}
+window._updateAll = updateAll;
+
+function updateStats(){
+  const all=groups.flatMap(g=>g.items);
+  const done=all.filter(i=>i.state==='done').length;
+  const fail=all.filter(i=>i.state==='fail').length;
+  const pending=all.length-done-fail;
+  const pct=Math.round((done/all.length)*100);
+  document.getElementById('stat-total').textContent=all.length;
+  document.getElementById('stat-done').textContent=done;
+  document.getElementById('stat-pending').textContent=pending;
+  document.getElementById('stat-fail').textContent=fail;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  const pf=document.getElementById('prog-fill');
+  pf.className='progress-fill '+(pct>=80?'good':pct>=50?'warn':'bad');
+  document.getElementById('prog-pct').style.color=pct>=80?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+  updateMetricas();
+}
+
+function updateMetricas(){
+  const all=groups.flatMap(g=>g.items);
+  const conHora=all.filter(i=>i.hReal&&i.hReal.includes(':'));
+  const deltas=conHora.map(i=>toMins(i.hReal)-toMins(i.hPlan)).filter(d=>d!==null);
+  const enTiempo=deltas.filter(d=>d<=0).length;
+  const tarde=deltas.filter(d=>d>0).length;
+  const acum=deltas.filter(d=>d>0).reduce((a,b)=>a+b,0);
+  const cumPct=deltas.length>0?Math.round((enTiempo/deltas.length)*100):null;
+  const avgDelta=deltas.length>0?Math.round(deltas.reduce((a,b)=>a+b,0)/deltas.length):null;
+  document.getElementById('m-registradas').textContent=conHora.length;
+  document.getElementById('m-enTiempo').textContent=enTiempo;
+  document.getElementById('m-tarde').textContent=tarde;
+  document.getElementById('m-acum').textContent=acum>0?'+'+acum+' min':acum===0?'0 min':'—';
+  document.getElementById('stat-cump').textContent=cumPct!==null?cumPct+'%':'—';
+  document.getElementById('stat-cump').style.color=cumPct>=80?'var(--green)':cumPct>=50?'var(--yellow)':'#6b3fa0';
+  document.getElementById('stat-delta').textContent=avgDelta!==null?(avgDelta>0?'+':'')+avgDelta+' min':'—';
+  document.getElementById('stat-delta').style.color=avgDelta===null?'var(--text-bright)':avgDelta<=0?'var(--green)':avgDelta<=10?'var(--yellow)':'var(--red)';
+}
+
+// FIRMAS
+let firmaCounter=0;
+const firmasGrid=document.getElementById('firmas-grid');
+
+function addFirmaBlock(title=''){
+  const id='firma-'+firmaCounter++;
+  const block=document.createElement('div');block.className='firma-block';block.id='block-'+id;
+  block.innerHTML=`
+    <div class="firma-block-header">
+      <input class="firma-block-title-input" value="${title||'Participante'}" placeholder="Rol / Título">
+      <button class="btn-del-firma" onclick="removeFirmaBlock('block-${id}')" title="Quitar">✕</button>
+    </div>
+    <div class="firma-block-fields">
+      <div class="firma-field"><label class="firma-label">Nombre</label><input class="firma-input" id="${id}-nombre" placeholder="Nombre completo"></div>
+      <div class="firma-field"><label class="firma-label">Empresa</label><input class="firma-input" id="${id}-empresa" placeholder="Empresa"></div>
+      <div class="firma-field"><label class="firma-label">Puesto</label><input class="firma-input" id="${id}-puesto" placeholder="Cargo / Puesto"></div>
+    </div>
+    <label class="firma-canvas-label">Firma</label>
+    <canvas id="canvas-${id}" class="firma-canvas" height="80"></canvas>
+    <button class="firma-clear" onclick="clearCanvas('canvas-${id}')">Limpiar firma</button>`;
+  firmasGrid.appendChild(block);
+  requestAnimationFrame(()=>initCanvas('canvas-'+id));
+}
+function removeFirmaBlock(bid){const el=document.getElementById(bid);if(el)el.remove();}
+
+['Técnico Ejecutor 1','Técnico Ejecutor 2','Supervisor MAXTEC','Representante Cliente'].forEach(t=>addFirmaBlock(t));
+
+function initCanvas(id){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1,w=canvas.offsetWidth||400;
+  canvas.width=w*dpr;canvas.height=80*dpr;
+  ctx.scale(dpr,dpr);ctx.strokeStyle='#1a2638';ctx.lineWidth=1.8;ctx.lineCap='round';ctx.lineJoin='round';
+  let drawing=false,last=null;
+  function pos(e){const r=canvas.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top};}
+  canvas.addEventListener('mousedown',e=>{drawing=true;last=pos(e);});
+  canvas.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});
+  canvas.addEventListener('mouseup',()=>{drawing=false;});
+  canvas.addEventListener('mouseleave',()=>{drawing=false;});
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;last=pos(e);},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;},{passive:false});
+  canvas.addEventListener('touchend',()=>{drawing=false;});
+}
+function clearCanvas(id){const c=document.getElementById(id);if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);}
+
+// SAVE / LOAD
+function saveReport(){
+  const firmaBlocks=[...firmasGrid.querySelectorAll('.firma-block')].map(b=>({
+    titulo:b.querySelector('.firma-block-title-input')?.value||'',
+    nombre:b.querySelector('[id$="-nombre"]')?.value||'',
+    empresa:b.querySelector('[id$="-empresa"]')?.value||'',
+    puesto:b.querySelector('[id$="-puesto"]')?.value||'',
+    firma:b.querySelector('canvas')?.toDataURL()||'',
+  }));
+  const report={
+    meta:{ref:'MXT-MOP-010',fecha:'30/05/2026',generado:new Date().toISOString(),
+      hinicio:document.getElementById('f-hinicio')?.value,
+      htermino:document.getElementById('f-htermino')?.value,
+      observaciones:document.getElementById('f-obs')?.value},
+    actividades:groups.flatMap(g=>g.items.map(i=>({id:i.id,desc:i.desc,estado:i.state,hPlan:i.hPlan,hFinal:i.hFinal,hReal:i.hReal}))),
+    fallas:fallas.map(f=>({itemId:f.itemId,desc:f.desc,status:f.status})),
+    firmas:firmaBlocks,
+  };
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+  a.download=`MXT-MOP-010_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function loadReport(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.actividades)data.actividades.forEach(a=>{
+        groups.forEach(g=>g.items.forEach(item=>{
+          if(item.id===a.id){
+            item.state=a.estado||'none';item.hReal=a.hReal||'';
+            const row=document.querySelector(`.row[data-id="${item.id}"]`);
+            if(row){row.classList.remove('done','fail');
+              const ci=row.querySelector('.chk-inner');
+              if(item.state==='done'){row.classList.add('done');ci.textContent='✓';}
+              else if(item.state==='fail'){row.classList.add('fail');ci.textContent='✕';}
+              else ci.textContent='';
+              const inp=row.querySelector('.cell-input-hora');if(inp)inp.value=item.hReal;
+              updateDelta(item);}
+          }
+        }));
+      });
+      if(data.fallas){fallas=[];fallaId=0;data.fallas.forEach(f=>fallas.push({_id:fallaId++,itemId:f.itemId,desc:f.desc,status:f.status}));renderFallas();}
+      if(data.firmas){
+        firmasGrid.innerHTML='';firmaCounter=0;
+        data.firmas.forEach(f=>addFirmaBlock(f.titulo||'Participante'));
+        requestAnimationFrame(()=>{
+          [...firmasGrid.querySelectorAll('.firma-block')].forEach((b,i)=>{
+            const f=data.firmas[i];if(!f)return;
+            const n=b.querySelector('[id$="-nombre"]');if(n)n.value=f.nombre||'';
+            const emp=b.querySelector('[id$="-empresa"]');if(emp)emp.value=f.empresa||'';
+            const p=b.querySelector('[id$="-puesto"]');if(p)p.value=f.puesto||'';
+            if(f.firma&&f.firma!=='data:,'){
+              const canvas=b.querySelector('canvas');
+              if(canvas){const img=new Image();img.onload=()=>canvas.getContext('2d').drawImage(img,0,0,canvas.offsetWidth,80);img.src=f.firma;}
+            }
+          });
+        });
+      }
+      if(data.meta){
+        const hi=document.getElementById('f-hinicio');if(hi&&data.meta.hinicio)hi.value=data.meta.hinicio;
+        const ht=document.getElementById('f-htermino');if(ht&&data.meta.htermino)ht.value=data.meta.htermino;
+        const obs=document.getElementById('f-obs');if(obs&&data.meta.observaciones)obs.value=data.meta.observaciones;
+      }
+      updateAll();alert('Reporte cargado correctamente.');
+    }catch(err){alert('Error al leer el archivo: '+err.message);}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+</script>
+</body>
+</html>
