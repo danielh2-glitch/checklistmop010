@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MXT-MOP-011 | Shutdown 300 kW – 13 Jun 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#eef2f7;--surface:#fff;--surface2:#f5f7fa;--border:#cdd8e6;
+    --accent:#0056b8;--accent2:#0071e3;--yellow:#8a5a00;--green:#006b35;
+    --red:#c0392b;--text:#1a2638;--text-dim:#6b8099;--text-bright:#0d1a2a;
+    --mono:'Share Tech Mono',monospace;--sans:'Barlow Condensed',sans-serif;--body:'Barlow',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;padding:20px;}
+
+  .header{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:16px 24px;margin-bottom:4px;border-radius:4px 4px 0 0;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .project-name{font-family:var(--sans);font-weight:700;font-size:14px;color:var(--text-bright);}
+  .meta-row{display:flex;gap:20px;font-family:var(--mono);font-size:11px;color:var(--text-dim);flex-wrap:wrap;margin-top:4px;}
+  .meta-row b{color:var(--accent);}
+  .mop-tag{background:var(--accent);color:#fff;font-family:var(--sans);font-weight:900;font-size:13px;padding:4px 12px;border-radius:2px;letter-spacing:1px;text-align:center;}
+  .rev-tag{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-align:center;margin-top:3px;}
+
+  .banner{background:linear-gradient(135deg,#fdf3dc,#fae8b0);border:1px solid #e6d080;border-top:none;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;border-radius:0 0 4px 4px;}
+  .banner-title{font-family:var(--sans);font-weight:900;font-size:12px;letter-spacing:1.5px;color:#7a4f00;text-transform:uppercase;}
+  .banner-right{font-family:var(--mono);font-size:10px;color:var(--text-dim);}
+
+  .ventana-bar{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .ventana-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+  .ventana-times{font-family:var(--mono);font-size:11px;color:var(--text-dim);white-space:nowrap;}
+  .ventana-times b{color:var(--accent);}
+  .ventana-track{flex:1;height:16px;background:#e0eaf5;border-radius:8px;overflow:hidden;min-width:100px;}
+  .ventana-fill{height:100%;background:linear-gradient(90deg,var(--green),#00a851);border-radius:8px;transition:width .5s;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;}
+  .ventana-pct{font-family:var(--mono);font-size:9px;color:#fff;font-weight:700;white-space:nowrap;}
+  .ventana-elapsed{font-family:var(--mono);font-size:11px;color:var(--yellow);white-space:nowrap;}
+  #countdown-bar .cd-block{display:inline-flex;flex-direction:column;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 10px;min-width:44px;}
+  #countdown-bar .cd-num{font-family:var(--sans);font-weight:900;font-size:18px;line-height:1;color:var(--accent);}
+  #countdown-bar .cd-lbl{font-family:var(--mono);font-size:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+  #countdown-bar .cd-sep{display:inline-flex;font-family:var(--sans);font-weight:900;font-size:16px;color:var(--border);align-items:center;padding:0 1px;}
+  #countdown-bar .cd-status{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-left:8px;}
+  .clock{font-family:var(--mono);font-size:14px;color:var(--text-bright);font-weight:700;white-space:nowrap;}
+
+  .action-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:4px;padding:8px 16px;font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,transform .1s;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+  .btn:hover{transform:translateY(-1px);}
+  .btn-print{background:var(--accent);color:#fff;}.btn-print:hover{background:#004499;}
+  .btn-save{background:var(--green);color:#fff;}.btn-save:hover{background:#005228;}
+  .btn-open{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent);box-shadow:none;}.btn-open:hover{background:#ddeeff;}
+
+  .sync-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+
+  .stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .stat-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .stat-value{font-family:var(--sans);font-weight:700;font-size:22px;color:var(--text-bright);margin-top:2px;}
+  .stat-value.green{color:var(--green);}.stat-value.yellow{color:var(--yellow);}.stat-value.blue{color:var(--accent);}.stat-value.red{color:var(--red);}.stat-value.purple{color:#6b3fa0;}
+
+  .progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .progress-label{font-family:var(--mono);font-size:11px;color:var(--text-dim);white-space:nowrap;}
+  .progress-track{flex:1;height:6px;background:#d0dae6;border-radius:3px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:3px;transition:width .4s;}
+  .progress-fill.good{background:linear-gradient(90deg,var(--green),#00a851);}
+  .progress-fill.warn{background:linear-gradient(90deg,var(--yellow),#e6900a);}
+  .progress-fill.bad{background:linear-gradient(90deg,var(--red),#e74c3c);}
+  .progress-pct{font-family:var(--mono);font-size:12px;white-space:nowrap;min-width:38px;text-align:right;}
+
+  /* 9 cols: item | chk | desc | resp | fecha | dur | hplan | hreal | acciones */
+  .section-header{display:grid;grid-template-columns:44px 26px 1fr 68px 42px 48px 54px 54px 54px 52px 68px;background:#1a3a5c;border:1px solid var(--border);border-bottom:none;border-radius:4px 4px 0 0;margin-top:14px;}
+  .col-head{font-family:var(--mono);font-size:9px;color:#a8c4e0;letter-spacing:.8px;text-transform:uppercase;padding:7px 4px;border-right:1px solid #2a4a6c;text-align:center;}
+  .col-head:first-child{text-align:left;padding-left:8px;}
+  .col-head:last-child{border-right:none;}
+
+  .group{border:1px solid var(--border);border-top:none;overflow:visible;}
+  .group:last-child{border-radius:0 0 4px 4px;margin-bottom:22px;}
+
+  .group-title{display:flex;align-items:center;border-top:2px solid;border-bottom:1px solid var(--border);}
+  .group-title-edit{background:transparent;border:none;border-bottom:1.5px dashed rgba(0,0,0,.12);font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;flex:1;outline:none;padding:7px 10px;min-width:0;cursor:text;}
+  .group-title-edit:focus{background:#f0f6ff;}
+  .group-title-btns{display:flex;gap:3px;padding:0 8px;flex-shrink:0;}
+  .btn-g{background:rgba(0,0,0,.06);border:none;border-radius:3px;cursor:pointer;font-size:11px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;opacity:.6;}
+  .btn-g:hover{opacity:1;background:rgba(0,0,0,.14);}
+
+  .g-blue .group-title{background:linear-gradient(90deg,#dce8f7,#e8f0fb);border-top-color:var(--accent);}
+  .g-blue .group-title-edit{color:var(--accent);}
+  .g-yellow .group-title{background:linear-gradient(90deg,#fdf3dc,#fef8ec);border-top-color:#c98a00;}
+  .g-yellow .group-title-edit{color:#7a4f00;}
+  .g-red .group-title{background:linear-gradient(90deg,#fdecea,#fdf3f2);border-top-color:var(--red);}
+  .g-red .group-title-edit{color:var(--red);}
+  .g-green .group-title{background:linear-gradient(90deg,#e0f7ea,#edfaf3);border-top-color:var(--green);}
+  .g-green .group-title-edit{color:var(--green);}
+  .g-purple .group-title{background:linear-gradient(90deg,#f0eafa,#f7f0fd);border-top-color:#6b3fa0;}
+  .g-purple .group-title-edit{color:#6b3fa0;}
+  .g-orange .group-title{background:linear-gradient(90deg,#fff3e0,#fff8ec);border-top-color:#e65c00;}
+  .g-orange .group-title-edit{color:#c04a00;}
+
+  /* ROW — 9 cols */
+  .row{display:grid;grid-template-columns:44px 26px 1fr 68px 42px 48px 54px 54px 54px 52px 68px;border-bottom:1px solid #e4ecf4;align-items:center;background:var(--surface);transition:background .15s;}
+  .row:nth-child(even){background:var(--surface2);}
+  .row:last-child{border-bottom:none;}
+  .row:hover{background:#ddeeff;}
+  .row.done{background:#e8f7ee!important;}
+  .row.fail{background:#fdecea!important;}
+
+  /* day-change highlight */
+  .row.dom-row{border-left:3px solid #6b3fa0;}
+  .row.vie-row{border-left:3px solid #c04a00;}
+  .row.mie-row{border-left:3px solid #006b35;}
+  .row.lun-row{border-left:3px solid #1a3a6b;}
+  .row.mar-row{border-left:3px solid #4a1a6b;}
+  .row.mie2-row{border-left:3px solid #00a851;}
+  .row.jue-row{border-left:3px solid #c87000;}
+
+  .cell{padding:6px 4px;border-right:1px solid #e4ecf4;display:flex;align-items:center;}
+  .cell:last-child{border-right:none;}
+
+  .cell-num{font-family:var(--mono);font-size:10px;color:var(--text-dim);justify-content:center;}
+  .cell-chk{justify-content:center;padding:3px;cursor:pointer;}
+  .chk{width:19px;height:19px;border:1.5px solid var(--border);border-radius:3px;background:#fff;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+  .chk-inner{font-size:12px;font-weight:900;line-height:1;}
+  .row.done .chk{background:var(--green);border-color:var(--green);}
+  .row.fail .chk{background:var(--red);border-color:var(--red);}
+  .row.done .chk .chk-inner,.row.fail .chk .chk-inner{color:#fff;}
+
+  .cell-desc{font-size:11px;color:var(--text);line-height:1.3;flex-direction:column;align-items:flex-start;gap:2px;padding:5px 5px;}
+  .row.done .desc-txt{text-decoration:line-through;color:var(--text-dim);}
+  .row.fail .desc-txt{color:var(--red);}
+
+  .editable{background:transparent;border:none;border-bottom:1px dashed transparent;outline:none;width:100%;font-family:inherit;font-size:inherit;color:inherit;resize:none;padding:0;line-height:1.3;}
+  .editable:hover{border-bottom-color:var(--border);}
+  .editable:focus{border-bottom-color:var(--accent);background:#f0f6ff;}
+
+  .cell-resp{justify-content:center;font-family:var(--mono);font-size:9px;color:var(--text-dim);text-align:center;padding:4px 3px;}
+
+  /* Fecha badge */
+  .cell-fecha{justify-content:center;font-family:var(--mono);font-size:9px;font-weight:700;text-align:center;}
+  .badge-sab{color:#0056b8;background:#dce8f7;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-dom{color:#6b3fa0;background:#f0eafa;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-vie{color:#c04a00;background:#fff0e0;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-mie{color:#005a30;background:#e0f5e9;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-lun{color:#1a3a6b;background:#dce8f7;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-mar{color:#4a1a6b;background:#ede8f7;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-mie2{color:#005a30;background:#c8f0dc;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+  .badge-jue{color:#5a3a00;background:#faebd0;border-radius:3px;padding:2px 5px;white-space:nowrap;}
+
+  /* Duración */
+  .cell-dur{justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#8a5a00;}
+  /* H. Plan */
+  .cell-plan{justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--green);}
+  /* H. Real */
+  .cell-real{justify-content:center;padding:3px 4px;}
+  .inp-hora{font-family:var(--mono);font-size:11px;background:transparent;border:none;border-bottom:1.5px dashed var(--border);width:100%;text-align:center;color:var(--text);outline:none;padding:1px 2px;}
+  .inp-hora:focus{border-bottom-color:var(--accent);background:#eef6ff;}
+  .inp-hora::placeholder{color:#b0c4d8;font-size:10px;}
+
+  /* Porcentaje */
+  .cell-pct-wrap{justify-content:center;padding:3px 4px;flex-direction:column;gap:2px;align-items:center;}
+  .pct-btn{font-family:var(--mono);font-size:10px;font-weight:700;border:none;border-radius:3px;cursor:pointer;padding:3px 5px;min-width:38px;transition:background .15s,color .15s;white-space:nowrap;}
+  .pct-0  {background:#f0f0f0;color:#aaa;}
+  .pct-15 {background:#fff3e0;color:#c96000;}
+  .pct-25 {background:#fff3e0;color:#c96000;}
+  .pct-50 {background:#fff8e0;color:#8a5a00;}
+  .pct-75 {background:#e8f7ee;color:#006b35;}
+  .pct-90 {background:#d4f0e0;color:#005228;}
+  .pct-100{background:#006b35;color:#fff;}
+  .pct-bar{height:3px;border-radius:2px;background:#e0e0e0;width:100%;margin-top:1px;}
+  .pct-bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .3s;}
+
+  /* Acciones */
+  .cell-act{justify-content:center;gap:2px;flex-shrink:0;}
+  .btn-r{background:transparent;border:none;cursor:pointer;color:var(--text-dim);font-size:12px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:3px;transition:background .1s,color .1s;}
+  .btn-r:hover{background:#e0eaf8;color:var(--accent);}
+  .btn-r.del:hover{background:#fdecea;color:var(--red);}
+
+  /* day separator */
+  .day-sep{display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(90deg,#f0eafa,#faf8ff);border-bottom:1px solid #d8cef0;border-top:2px solid #6b3fa0;}
+  .day-sep-label{font-family:var(--sans);font-weight:900;font-size:11px;letter-spacing:2px;color:#6b3fa0;text-transform:uppercase;}
+  .day-sep-line{flex:1;height:1px;background:#c8b8e8;}
+
+  /* nota */
+  .nota-row{padding:2px 10px 4px 78px;font-size:9px;font-family:var(--mono);color:#b86000;background:#fffbf0;border-bottom:1px solid #f0e8d0;}
+
+  /* add bar */
+  .add-bar{display:flex;padding:5px 8px;background:var(--surface2);border-top:1px dashed var(--border);}
+  .btn-add{background:transparent;border:1px dashed var(--accent);border-radius:3px;color:var(--accent);font-family:var(--mono);font-size:10px;padding:4px 12px;cursor:pointer;letter-spacing:1px;}
+  .btn-add:hover{background:#ddeeff;}
+
+  /* FALLAS */
+  .fallas-section{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:4px;padding:16px 20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .fallas-title{font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:2px;color:var(--red);text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red);display:flex;align-items:center;gap:10px;}
+  .fallas-hint{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400;}
+  .falla-hdrs{display:grid;grid-template-columns:80px 1fr 140px 32px;gap:8px;margin-bottom:4px;}
+  .falla-hd{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .fallas-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+  .falla-row{display:grid;grid-template-columns:80px 1fr 140px 32px;gap:8px;align-items:center;}
+  .finp{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 8px;font-family:var(--body);font-size:12px;color:var(--text);outline:none;width:100%;}
+  .finp:focus{border-color:var(--red);background:#fff;}
+  .fsel{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;}
+  .btn-df{background:transparent;border:1px solid #e0b0b0;border-radius:3px;color:var(--red);cursor:pointer;font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .btn-df:hover{background:#fdecea;}
+  .btn-af{background:transparent;border:1px dashed var(--red);border-radius:3px;color:var(--red);font-family:var(--mono);font-size:11px;padding:5px 14px;cursor:pointer;letter-spacing:1px;}
+  .btn-af:hover{background:#fdecea;}
+
+  .footer{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text-dim);}
+  .footer-ref{color:var(--accent);}
+
+  @media(max-width:900px){.stats-bar{grid-template-columns:repeat(3,1fr);}}
+  /* ── MOBILE 680px ── */
+  @media(max-width:680px){
+    body{padding:6px;}
+    .header{grid-template-columns:1fr!important;padding:10px 12px!important;gap:6px;}
+    .header-badge{flex-direction:row;gap:8px;justify-content:flex-start;}
+    .project-name{font-size:12px!important;}
+    .meta-row{font-size:9px!important;gap:8px!important;flex-wrap:wrap;}
+    .banner{flex-direction:column;gap:4px;padding:8px 12px;}
+    .banner-title{font-size:10px!important;letter-spacing:1px!important;}
+    .action-bar{gap:5px;}
+    .btn{padding:6px 10px!important;font-size:11px!important;letter-spacing:.5px!important;}
+    .stats-bar{grid-template-columns:repeat(2,1fr)!important;gap:6px;}
+    .stat-value{font-size:18px!important;}
+    .stat-label{font-size:8px!important;}
+    .ventana-bar{flex-wrap:wrap;gap:6px;padding:8px 12px;}
+    .ventana-times{font-size:10px!important;}
+    .clock{font-size:11px!important;}
+    .legend-bar{flex-wrap:wrap;gap:6px;padding:6px 10px;}
+
+    /* TABLE: hide less critical cols, compress grid */
+    /* New grid: chk | desc | fecha | hreal | % */
+    .section-header{
+      display:grid!important;
+      grid-template-columns:26px 1fr 46px 54px 40px!important;
+    }
+    .row{
+      display:grid!important;
+      grid-template-columns:26px 1fr 46px 54px 40px!important;
+    }
+    /* Hide: item num, responsable, dur, hini, hplan, acciones */
+    .cell-num{display:none!important;}
+    .cell-resp{display:none!important;}
+    .cell-dur{display:none!important;}
+    .cell-plan:first-of-type{display:none!important;}
+    .cell-act{display:none!important;}
+    /* Hide corresponding headers */
+    .col-head:nth-child(1){display:none!important;} /* ITEM */
+    .col-head:nth-child(3){display:none!important;} /* Resp */
+    .col-head:nth-child(6){display:none!important;} /* Dur */
+    .col-head:nth-child(7){display:none!important;} /* H.Ini */
+    .col-head:nth-child(8){display:none!important;} /* H.Plan */
+    .col-head:nth-child(9){display:none!important;} /* Acciones */
+
+    .cell-desc{font-size:11px!important;padding:5px 4px!important;}
+    .cell-desc textarea{font-size:11px!important;min-height:28px!important;}
+    .cell-fecha{padding:3px!important;font-size:9px!important;}
+    .cell-real{padding:2px 3px!important;}
+    .inp-hora{font-size:10px!important;}
+    .cell-pct-wrap{padding:2px!important;}
+    .pct-btn{font-size:9px!important;min-width:28px!important;padding:2px 3px!important;}
+    .pct-bar{width:28px!important;}
+
+    .group-title-edit{font-size:10px!important;letter-spacing:.5px!important;padding:5px 8px!important;}
+    .btn-g{width:20px!important;height:20px!important;font-size:10px!important;}
+    .add-bar{padding:4px 6px;}
+    .btn-add{font-size:9px!important;padding:3px 8px!important;}
+
+    .falla-hdrs,.falla-row{grid-template-columns:55px 1fr 90px 26px!important;gap:5px!important;}
+    .nota-row{padding:2px 6px 3px 34px!important;font-size:8px!important;}
+
+    #countdown-bar{padding:8px 12px!important;gap:8px!important;flex-wrap:wrap!important;}
+    #countdown-bar .cd-num{font-size:15px!important;}
+    #countdown-bar .cd-lbl{font-size:7px!important;}
+    #countdown-bar .cd-sep{font-size:14px!important;}
+  }
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .action-bar,.sync-bar,.cell-act,.add-bar,.btn-g,.ventana-bar,#countdown-bar,.legend-bar{display:none!important;}
+    .btn-af,.btn-df{display:none!important;}
+    .section-header,.row{grid-template-columns:44px 26px 1fr 68px 42px 48px 54px 54px 54px 52px!important;}
+    .col-head:last-child{display:none!important;}
+    .stats-bar{display:grid!important;}.progress-wrap{display:flex!important;}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .badge-sab,.badge-dom,.cell-dur,.cell-plan{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+
+  /* COMIDA */
+  .row.comida-row{background:#f0f9ff!important;border-left:3px solid #0071e3;}
+  .row.comida-row:hover{background:#e0f0ff!important;}
+  .cell-comida{justify-content:center;font-family:var(--mono);font-size:10px;color:#0071e3;font-weight:700;}
+
+  /* CUADRILLA SECUNDARIA */
+  .row.secundaria { border-left: 3px solid #e67e00; }
+  .row.secundaria:nth-child(even) { background: #fffaf3; }
+  .row.secundaria:nth-child(odd) { background: #fffdf8; }
+  .row.secundaria:hover { background: #fff3e0; }
+  .row.secundaria.done { background: #e8f7ee !important; }
+  .row.secundaria.fail { background: #fdecea !important; }
+  .badge-sec { background:#fff3e0; color:#c96000; border-radius:3px; padding:2px 4px; font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:.5px; white-space:nowrap; }
+  .badge-pri { background:#e8f0fb; color:#0056b8; border-radius:3px; padding:2px 4px; font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:.5px; white-space:nowrap; }
+  .legend-bar { display:flex; gap:16px; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:8px 18px; margin-bottom:12px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; color:var(--text-dim); }
+  .legend-dot-pri { width:10px; height:10px; border-radius:2px; background:#0056b8; flex-shrink:0; }
+  .legend-dot-sec { width:10px; height:10px; border-radius:2px; background:#e67e00; flex-shrink:0; }
+  .legend-line-pri { width:18px; height:4px; background:#0056b8; border-radius:2px; flex-shrink:0; }
+  .legend-line-sec { width:18px; height:4px; background:#e67e00; border-radius:2px; flex-shrink:0; }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+  .group{animation:fadeIn .2s ease both;}
+</style>
+
+  <!-- Firebase compat (no module scope issues) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    var _fbConfig = {
+      apiKey: "AIzaSyC0AZLXFzEbbrWNN19fTXvnWl_YCi4Q36E",
+      authDomain: "checklist---mxt-mop-010.firebaseapp.com",
+      databaseURL: "https://checklist---mxt-mop-010-default-rtdb.firebaseio.com",
+      projectId: "checklist---mxt-mop-010",
+      storageBucket: "checklist---mxt-mop-010.firebasestorage.app",
+      messagingSenderId: "23916136550",
+      appId: "1:23916136550:web:b97b7ddec45388d1de85a7"
+    };
+    firebase.initializeApp(_fbConfig);
+    var _db = firebase.database();
+    var MOP_ID = "mop011";
+    var _lastSaveTime = 0;
+
+    function setSyncStatus(s){
+      var el = document.getElementById('sync-status'); if(!el) return;
+      if(s==='ok'){el.textContent='● Sincronizado';el.style.color='#006b35';}
+      else if(s==='saving'){el.textContent='↑ Guardando...';el.style.color='#8a5a00';}
+      else if(s==='live'){el.textContent='⟳ Tiempo real';el.style.color='#0056b8';}
+      else if(s==='error'){el.textContent='✕ Sin conexión';el.style.color='#c0392b';}
+      else{el.textContent='○ Conectando...';el.style.color='#6b8099';}
+    }
+
+    function applyData(data){
+      if(!data || !window._groups) return;
+      if(data.actividades){
+        window._groups.forEach(function(g){
+          g.items.forEach(function(item){
+            var key = item.id.replace(/\./g,'_');
+            var a = data.actividades[key]; if(!a) return;
+            item.state = a.estado||'none';
+            item.hReal = a.hReal||'';
+            item.pct   = a.pct||0;
+            var row = document.querySelector('.row[data-uid="'+item._uid+'"]');
+            if(!row) return;
+            row.classList.remove('done','fail');
+            var ci = row.querySelector('.chk-inner');
+            if(item.state==='done'){row.classList.add('done');ci.textContent='✓';}
+            else if(item.state==='fail'){row.classList.add('fail');ci.textContent='✕';}
+            else ci.textContent='';
+            var pctBtn = document.getElementById('pctbtn-'+item._uid);
+            if(pctBtn){pctBtn.className='pct-btn pct-'+item.pct;pctBtn.textContent=item.pct>0?item.pct+'%':'—';}
+            var pctBar = document.getElementById('pctbar-'+item._uid);
+            if(pctBar) pctBar.style.width=item.pct+'%';
+            var inp = row.querySelector('.inp-hora');
+            if(inp && document.activeElement!==inp) inp.value=item.hReal;
+          });
+        });
+      }
+      if(data.fallas && window._fallas){
+        window._fallas.length=0; window._fallaId=0;
+        Object.values(data.fallas).forEach(function(f){
+          window._fallas.push({_id:window._fallaId++,itemId:f.itemId,desc:f.desc,status:f.status});
+        });
+        window._renderFallas && window._renderFallas();
+      }
+      window._updateAll && window._updateAll();
+    }
+
+    // Wait for DOM to be ready before listening
+    window.addEventListener('load', function(){
+      setSyncStatus('connecting');
+      // Initial load
+      _db.ref(MOP_ID).once('value').then(function(snapshot){
+        applyData(snapshot.val());
+        setSyncStatus('ok');
+        // Real-time listener for other devices
+        _db.ref(MOP_ID).on('value', function(snapshot){
+          if(Date.now() - _lastSaveTime < 3000) return;
+          applyData(snapshot.val());
+          setSyncStatus('live');
+          setTimeout(function(){setSyncStatus('ok');}, 1500);
+        });
+      }).catch(function(e){
+        setSyncStatus('error');
+        console.error('Firebase error:', e);
+      });
+    });
+
+    window.fbSaveActs = function(){
+      if(!window._groups) return;
+      setSyncStatus('saving');
+      var all = {};
+      window._groups.forEach(function(g){
+        g.items.forEach(function(i){
+          all[i.id.replace(/\./g,'_')] = {estado:i.state, hReal:i.hReal, pct:i.pct||0};
+        });
+      });
+      _lastSaveTime = Date.now();
+      _db.ref(MOP_ID+'/actividades').update(all)
+        .then(function(){setSyncStatus('ok');})
+        .catch(function(){setSyncStatus('error');});
+    };
+
+    window.fbSaveFallas = function(){
+      if(!window._fallas) return;
+      setSyncStatus('saving');
+      var obj = {};
+      window._fallas.forEach(function(f,i){
+        obj['f'+i] = {itemId:f.itemId, desc:f.desc, status:f.status};
+      });
+      _lastSaveTime = Date.now();
+      _db.ref(MOP_ID+'/fallas').set(obj)
+        .then(function(){setSyncStatus('ok');})
+        .catch(function(){setSyncStatus('error');});
+    };
+  </script>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="project-name">Proyecto: Sustitución de Plantas de Emergencia – Corporativo Coca-Cola</div>
+    <div class="meta-row">
+      <span>Fecha: <b>12–17/06/2026</b></span>
+      <span>Ref. No.: <b>MXT-MOP-011</b></span>
+      <span>Equipo: <b>PE 300 kW y ATS</b></span>
+      <span>Ventana: <b>Vie 12 Jun 18:00 – Sáb 13 Jun 23:59 (30 h)</b></span>
+    </div>
+  </div>
+  <div><div class="mop-tag">MOP</div><div class="rev-tag">REV 08</div></div>
+</div>
+
+<div class="banner">
+  <div class="banner-title">Shutdown – Sustitución Tablero de Transferencia Planta de Emergencia 300 kW</div>
+  <div class="banner-right">IV. Secuencia Lógica Operativa Paso a Paso</div>
+</div>
+
+<div class="ventana-bar">
+  <span class="ventana-label">Ventana operativa</span>
+  <span class="ventana-times"><b>Vie 12 Jun 18:00</b> → <b>Sáb 13 Jun 23:59</b> (30 h) (30 h)</span>
+  <div class="ventana-track"><div class="ventana-fill" id="vfill" style="width:0%"><span class="ventana-pct" id="vpct">0%</span></div></div>
+  <span class="ventana-elapsed" id="velap">—</span>
+  <span class="clock" id="clock">--:--</span>
+</div>
+<!-- COUNTDOWN -->
+<div id="countdown-bar" style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.05);">
+  <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Cuenta regresiva</span>
+  <div id="countdown-val" style="display:flex;align-items:center;gap:4px;"></div>
+  <span id="countdown-label" style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">calculando...</span>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-open" onclick="document.getElementById('fi').click()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    Abrir JSON
+  </button>
+  <input type="file" id="fi" accept=".json" style="display:none" onchange="loadReport(event)">
+  <button class="btn btn-save" onclick="saveReport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Guardar JSON
+  </button>
+  <button class="btn btn-print" onclick="window.print()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Imprimir
+  </button>
+</div>
+<div class="sync-bar"><span id="sync-status" style="font-family:var(--mono);font-size:11px;color:#6b8099;">○ Sin sincronización</span></div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value blue" id="st-total">0</div></div>
+  <div class="stat-card"><div class="stat-label">Completadas</div><div class="stat-value green" id="st-done">0</div></div>
+  <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-value yellow" id="st-pend">0</div></div>
+  <div class="stat-card"><div class="stat-label">Con Falla</div><div class="stat-value red" id="st-fail">0</div></div>
+  <div class="stat-card"><div class="stat-label">% Avance</div><div class="stat-value purple" id="st-pct">0%</div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-label">AVANCE</div>
+  <div class="progress-track"><div class="progress-fill good" id="pfill" style="width:0%"></div></div>
+  <div class="progress-pct" id="ppct" style="color:var(--accent)">0%</div>
+</div>
+
+<!-- LEYENDA -->
+<div class="legend-bar">
+  <span style="font-family:var(--sans);font-weight:700;font-size:12px;color:var(--text-bright);letter-spacing:1px;text-transform:uppercase;">Cuadrillas:</span>
+  <div class="legend-item"><div class="legend-line-pri"></div>Cuadrilla Principal</div>
+  <div class="legend-item"><div class="legend-line-sec"></div>Cuadrilla Secundaria — actividades en paralelo</div>
+  <div class="legend-item"><span class="badge-pri">PRINC</span>Principal</div>
+  <div class="legend-item"><span class="badge-sec">SEC</span>Secundaria</div>
+</div>
+
+<div class="section-header">
+  <div class="col-head">ITEM</div>
+  <div class="col-head">EST</div>
+  <div class="col-head" style="text-align:left">Actividad</div>
+  <div class="col-head">Responsable</div>
+  <div class="col-head">Fecha</div>
+  <div class="col-head" style="color:#f5c842">Dur.</div>
+  <div class="col-head">H. Ini</div>
+  <div class="col-head" style="color:#6fcf97">H. Plan</div>
+  <div class="col-head">H. Real</div>
+  <div class="col-head">%</div>
+  <div class="col-head">Acciones</div>
+</div>
+<div id="checklist"></div>
+
+<div class="fallas-section">
+  <div class="fallas-title">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    V. Registro de Fallas e Incidencias
+    <span class="fallas-hint">— ✕ en actividad la agrega automáticamente</span>
+  </div>
+  <div class="falla-hdrs"><div class="falla-hd">Ítem</div><div class="falla-hd">Descripción</div><div class="falla-hd">Estatus</div><div></div></div>
+  <div class="fallas-list" id="fallas-list"></div>
+  <button class="btn-af" onclick="addFalla()">+ Agregar falla manual</button>
+</div>
+
+<div class="footer">
+  <span>MXT-MOP-011 REV 08 – SHUTDOWN / SUSTITUCIÓN TABLERO TRANSFERENCIA PLANTA 300 kW</span>
+  <span>Proyecto: Sustitución de Plantas de Emergencia – Corporativo Coca-Cola</span>
+  <span class="footer-ref">12–17/06/2026</span>
+</div>
+
+<script>
+// ── HELPERS ──
+function toMins(t){ if(!t||!t.includes(':'))return null; var p=t.split(':').map(Number); return p[0]*60+p[1]; }
+function fmtDur(m){ return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+// ── DATA ──
+// Shutdown 07:00, LOTO 07:40, Verificación ausencia energía 07:50
+// Personal llega 08:00 — secciones 1 y 2 ajustadas a las 08:00
+// Ventana cierre: Dom 13:50
+var groups = [
+  { id:'g-pre', title:'0. Trabajos Preliminares — Mié 10 Jun y Vie 12 Jun (09:00–18:00 h)', color:'g-yellow', items:[
+    { id:'P.01', desc:'Tendido y posicionamiento de cable alimentador de emergencia desde planta hasta cuarto eléctrico — colocación en charola con cinturones de nylon', resp:'MAXTEC', tipo:'Operativo', dia:'Mié', dur:0, hPlan:'', nota:'Trabajo previo sin energizar — no requiere Shutdown', cuad:'P' },
+    { id:'P.02', desc:'Preparación de charofil para nueva trayectoria de alimentación de UPS', resp:'MAXTEC', tipo:'Operativo', dia:'Mié', dur:0, hPlan:'', nota:'Trabajo previo sin Shutdown', cuad:'S' },
+    { id:'P.03', desc:'Preparación de tubería conduit PGG para cables de control', resp:'MAXTEC', tipo:'Operativo', dia:'Mié', dur:0, hPlan:'', nota:'Trabajo previo sin Shutdown', cuad:'S' },
+    { id:'P.04', desc:'Adecuación e instalación de charola porta cables', resp:'MAXTEC', tipo:'Operativo', dia:'Mié', dur:0, hPlan:'', nota:'Trabajos parcialmente ejecutados — verificar y completar', cuad:'S' },
+    { id:'P.05', desc:'Elaboración de acoplamiento para charola porta cables — tablero de transferencia a planta de emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Mié', dur:0, hPlan:'', nota:'Trabajos parcialmente ejecutados — verificar y completar', cuad:'S' },
+    { id:'P.06', desc:'Preparación y elaboración de cortes de lámina en gabinete de tablero nuevo — protección con lona antichispa y cartón', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:0, hPlan:'', nota:'Trabajos parcialmente ejecutados — verificar y completar', cuad:'S' },
+    { id:'P.07', desc:'Cableado de conductores para control de planta de emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:0, hPlan:'', nota:'Trabajos parcialmente ejecutados — verificar y completar', cuad:'S' },
+  ]},
+  { id:'g0', title:'1. Verificación de Personal — Protocolo de Seguridad (Vie 16:30)', color:'g-blue', items:[
+    { id:'1.01', desc:'Arribo de personal y transportes en calle Taine', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'16:45', nota:'Previo al Shutdown — personal debe estar listo a las 18:00', cuad:'P' },
+    { id:'1.02', desc:'Plática de seguridad y operativa — método de trabajo seguro', resp:'MAXTEC', tipo:'Seguridad', dia:'Vie', dur:15, hPlan:'17:00', nota:'', cuad:'P' },
+    { id:'1.03', desc:'Registro y validación de personal operativo en sitio', resp:'MAXTEC', tipo:'Seguridad', dia:'Vie', dur:5, hPlan:'17:05', nota:'', cuad:'P' },
+    { id:'1.04', desc:'Verificación de EPP — equipo de protección personal completo', resp:'MAXTEC', tipo:'Seguridad', dia:'Vie', dur:1, hPlan:'17:06', nota:'', cuad:'P' },
+    { id:'1.05', desc:'Ingreso a cuarto eléctrico sótano 1 y delimitación de área de trabajo', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:5, hPlan:'17:11', nota:'', cuad:'P' },
+  ]},
+  { id:'g1', title:'2. Inspección de Equipo de Medición (Vie 16:30 — en paralelo con sección 1)', color:'g-green', items:[
+    { id:'2.01', desc:'Revisión física de multímetro digital y vigencia de calibración', resp:'MAXTEC/CBRE', tipo:'Seguridad', dia:'Vie', dur:5, hPlan:'16:35', nota:'En paralelo con arribo de personal', cuad:'P' },
+    { id:'2.02', desc:'Revisión física de indicador de secuencia de fases', resp:'MAXTEC/CBRE', tipo:'Seguridad', dia:'Vie', dur:5, hPlan:'16:40', nota:'', cuad:'P' },
+    { id:'2.03', desc:'Revisión física de equipo torquímetro', resp:'MAXTEC/CBRE', tipo:'Seguridad', dia:'Vie', dur:5, hPlan:'16:45', nota:'', cuad:'P' },
+    { id:'2.04', desc:'Revisión de megger de aislamiento', resp:'MAXTEC/CBRE', tipo:'Seguridad', dia:'Vie', dur:5, hPlan:'16:50', nota:'', cuad:'P' },
+  ]},
+  { id:'g2', title:'3. Shut Down (Vie 18:00)', color:'g-red', items:[
+    { id:'3.01', desc:'Identificación de secuencia de fases — tablero de transferencia 300 kW', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'17:10', nota:'Previo al Shutdown — verificación con sistema energizado', cuad:'P' },
+    { id:'3.02', desc:'Lectura de tensión de fases — alimentación normal', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'17:25', nota:'Previo al Shutdown — registro de parámetros base', cuad:'P' },
+    { id:'3.03', desc:'Shutdown del sistema', resp:'OP / COCA COLA', tipo:'Operativo', dia:'Vie', dur:10, hPlan:'17:35', nota:'Inicio de ventana operativa — coordinación con operaciones Coca-Cola', cuad:'P' },
+    { id:'3.04', desc:'Bloqueo y etiquetado de interruptores (LOTO)', resp:'OP / COCA COLA / MAXTEC', tipo:'Seguridad', dia:'Vie', dur:10, hPlan:'17:45', nota:'NOM-029-STPS-2011 — NFPA 70E', cuad:'P' },
+    { id:'3.05', desc:'Verificación de ausencia de voltaje y drenado de energías residuales', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:5, hPlan:'17:50', nota:'Control de energías peligrosas previo al trabajo eléctrico', cuad:'P' },
+  ]},
+  { id:'g3', title:'4. Retiro de Tablero de Transferencia existente de Planta de Emergencia 300 kW', color:'g-purple', items:[
+    { id:'4.01', desc:'Preparación y elaboración de cortes de lámina en gabinete de tablero nuevo — protección con lona antichispa y cartón para evitar caída de rebaba de acero en componentes', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:90, hPlan:'19:30', nota:'Trabajos parcialmente ejecutados el Mié 10 Jun — continuar y verificar', cuad:'S' },
+    { id:'4.02', desc:'Preparación y corte de cable alimentador emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:90, hPlan:'19:30', nota:'', cuad:'S' },
+    { id:'4.03', desc:'Identificación de cables — circuito de fuerza interruptor UPS', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'18:15', nota:'', cuad:'S' },
+    { id:'4.04', desc:'Identificación de cables — circuito de fuerza interruptor 400 A', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'18:15', nota:'', cuad:'P' },
+    { id:'4.05', desc:'Identificación de cables — circuito de fuerza y control tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'18:30', nota:'', cuad:'P' },
+    { id:'4.06', desc:'Retiro de cableado interruptor 800 A — alimentación y carga (24-3/0+2T)', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:90, hPlan:'20:00', nota:'', cuad:'P' },
+    { id:'4.07', desc:'Retiro de cableado interruptor 400 A — alimentación (6-3/0+1T)', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:45, hPlan:'19:15', nota:'', cuad:'P' },
+    { id:'4.08', desc:'Retiro de alimentadores tablero de transferencia — línea normal', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:30, hPlan:'19:45', nota:'', cuad:'P' },
+    { id:'4.09', desc:'Retiro de charola porta cables', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'19:45', nota:'', cuad:'S' },
+    { id:'4.10', desc:'Retiro de ductos cuadrados acoplados a tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'20:00', nota:'', cuad:'S' },
+    { id:'4.11', desc:'Maniobra de retiro de tablero de transferencia — método palanca mecánica con protección de piso en madera', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'20:15', nota:'', cuad:'P' },
+    { id:'4.12', desc:'Retiro de base fabricada de ángulo de acero del tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:15, hPlan:'20:30', nota:'', cuad:'P' },
+    { id:'4.13', desc:'Colocación de base nueva para tablero de transferencia — Cuadrilla Schedia', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:10, hPlan:'20:40', nota:'⚠ Cuadrilla Schedia — inicio 20:00', cuad:'S' },
+    { id:'4.14', desc:'Posicionamiento y colocación en posición final de tablero de transferencia 300 kW', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:30, hPlan:'21:10', nota:'⚠ Cuadrilla Téllez — inicio 20:20', cuad:'S' },
+    { id:'4.15', desc:'Adecuación e instalación de ducto de lámina 15x15 cm', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:20, hPlan:'21:30', nota:'', cuad:'S' },
+    { id:'4.16', desc:'Adecuación e instalación de ductos 10x10 cm', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:20, hPlan:'21:50', nota:'', cuad:'S' },
+    { id:'4.17', desc:'Adecuación e instalación de charola porta cables', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:20, hPlan:'22:10', nota:'Trabajos parcialmente ejecutados el Mié 10 Jun — verificar y completar', cuad:'S' },
+    { id:'4.18', desc:'Introducción y arreglo de cables — interruptor 400 A', resp:'MAXTEC', tipo:'Operativo', dia:'Vie', dur:90, hPlan:'23:40', nota:'', cuad:'S' },
+    { id:'4.19', desc:'Introducción y arreglo de cables — interruptor 800 A lado alimentación', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:90, hPlan:'01:10', nota:'', cuad:'S' },
+{ id:'C.01', desc:'Descanso — Comida (1 hora)', resp:'MAXTEC', tipo:'Descanso', dia:'Sáb', dur:60, hPlan:'02:10', nota:'Descanso programado — Sáb 13 Jun 01:10 h', cuad:'P' },
+    { id:'4.20', desc:'Introducción y arreglo de cables — interruptor 800 A lado carga', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:90, hPlan:'03:40', nota:'', cuad:'P' },
+    { id:'4.21', desc:'Introducción y arreglo de cables — alimentador normal en el interior del tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:120, hPlan:'05:40', nota:'', cuad:'S' },
+    { id:'4.22', desc:'Introducción y arreglo de cables — alimentadores lado carga en el interior del tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:240, hPlan:'11:00', nota:'', cuad:'P' },
+    { id:'4.23', desc:'Elaboración de acoplamiento para charola porta cables — tablero de transferencia a planta de emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:30, hPlan:'11:30', nota:'Trabajos parcialmente ejecutados el Mié 10 Jun — verificar y completar', cuad:'P' },
+    { id:'4.24', desc:'Prueba de resistencia de aislamiento — alimentador emergencia (Megger)', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:90, hPlan:'13:00', nota:'', cuad:'P' },
+{ id:'C.02', desc:'Descanso — Comida (1 hora)', resp:'MAXTEC', tipo:'Descanso', dia:'Sáb', dur:60, hPlan:'14:00', nota:'Descanso programado — Sáb 13 Jun 13:00 h', cuad:'P' },
+    { id:'4.25', desc:'Colocación de cables en charola y arreglo con cinturones de nylon — alimentador emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:60, hPlan:'15:00', nota:'Cables tendidos parcialmente el Mié 10 Jun — verificar y completar recorrido', cuad:'P' },
+    { id:'4.26', desc:'Introducción y arreglo de cables — alimentador emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:210, hPlan:'19:30', nota:'', cuad:'P' },
+    { id:'4.27', desc:'Conexionado eléctrico de tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:90, hPlan:'21:00', nota:'', cuad:'P' },
+    { id:'4.28', desc:'Torqueo de terminales — tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:30, hPlan:'21:30', nota:'', cuad:'P' },
+    { id:'4.29', desc:'Torqueo de terminales — interruptor 800 A', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:15, hPlan:'21:45', nota:'', cuad:'P' },
+    { id:'4.29b', desc:'Etiquetado de cables — tablero de transferencia y planta de emergencia', resp:'Ing. Tapia', tipo:'Operativo', dia:'Sáb', dur:30, hPlan:'20:45', nota:'Actividad en paralelo — no afecta secuencia principal', cuad:'S' },
+    { id:'4.30', desc:'Torqueo de terminales — interruptor 400 A', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:15, hPlan:'22:00', nota:'', cuad:'P' },
+    { id:'4.31', desc:'Revisión integral — conexiones, torque y arreglo de cables', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:115, hPlan:'23:55', nota:'', cuad:'P' },
+    { id:'4.32', desc:'Colocación de tapas de interruptores', resp:'MAXTEC', tipo:'Operativo', dia:'Sáb', dur:5, hPlan:'23:59', nota:'Límite de ventana operativa del Shutdown', cuad:'S' },
+  ]},
+  { id:'g4', title:'5. Salida de personal — Madrugada Dom 14 Jun', color:'g-blue', items:[
+    { id:'5.01', desc:'Recolección y retiro de herramienta y equipo de trabajo', resp:'MAXTEC', tipo:'Operativo', dia:'Dom', dur:10, hPlan:'00:10', nota:'', cuad:'P' },
+    { id:'5.02', desc:'Limpieza final y verificación de área de trabajo', resp:'MAXTEC', tipo:'Operativo', dia:'Dom', dur:10, hPlan:'00:20', nota:'', cuad:'P' },
+    { id:'5.03', desc:'Retiro de personal del sitio', resp:'MAXTEC', tipo:'Operativo', dia:'Dom', dur:5, hPlan:'00:25', nota:'', cuad:'P' },
+  ]},
+  { id:'g5', title:'6. Conexión Lado Emergencia — Lunes 15 Jun (17:00 h)', color:'g-purple', items:[
+    { id:'6.01', desc:'Ingreso de planta de emergencia 300 kW a sitio definitivo', resp:'MAXTEC', tipo:'Operativo', dia:'Lun', dur:0, hPlan:'17:00', nota:'Inicio trabajos conexión lado emergencia — 17:00 h Lun 15 Jun', cuad:'P' },
+    { id:'6.02', desc:'Conexión de cables de alimentación lado emergencia — tablero de transferencia a planta de emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Lun', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'6.03', desc:'Conexión de cables de control — planta de emergencia a tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Lun', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'6.04', desc:'Torqueo de terminales — lado emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Lun', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'6.05', desc:'Revisión integral de conexiones lado emergencia', resp:'MAXTEC', tipo:'Operativo', dia:'Lun', dur:0, hPlan:'', nota:'', cuad:'P' },
+  ]},
+  { id:'g5b', title:'7. Continuación Conexión, Escape y Suministro de Diésel — Martes 16 Jun', color:'g-purple', items:[
+    { id:'7.01', desc:'Continuación de trabajos de conexión lado emergencia — tablero de transferencia', resp:'MAXTEC', tipo:'Operativo', dia:'Mar', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'7.02', desc:'Colocación de sistema de escape — planta de emergencia 300 kW', resp:'MAXTEC', tipo:'Operativo', dia:'Mar', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'7.03', desc:'Suministro de diésel a planta de emergencia 300 kW', resp:'MAXTEC', tipo:'Operativo', dia:'Mar', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'7.04', desc:'Verificación de niveles — diésel, aceite, refrigerante y electrolito de baterías', resp:'MAXTEC', tipo:'Operativo', dia:'Mar', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'7.05', desc:'Revisión final de conexiones, torque y arreglo de cables', resp:'MAXTEC', tipo:'Operativo', dia:'Mar', dur:0, hPlan:'', nota:'', cuad:'P' },
+  ]},
+  { id:'g5c', title:'8. Comisionamiento GHPOWER y Puesta en Marcha — Miércoles 17 Jun', color:'g-orange', items:[
+    { id:'8.01', desc:'Comisionamiento de planta de emergencia 300 kW — GHPOWER', resp:'MAXTEC / GHPOWER', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'Comisionamiento a cargo de GHPOWER', cuad:'P' },
+    { id:'8.02', desc:'Start Up del sistema', resp:'MAXTEC / GHPOWER', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'8.03', desc:'Verificación de secuencia de fases — lado normal y carga', resp:'MAXTEC', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'8.04', desc:'Revisión de tensiones de operación', resp:'MAXTEC', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'8.05', desc:'Prueba de transferencia automática — simulación de falla de red', resp:'MAXTEC / GHPOWER', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'8.06', desc:'Bloqueo de interruptor lado emergencia en tablero', resp:'MAXTEC', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'8.07', desc:'Visto bueno y toma de carga desde tablero de transferencia', resp:'MAXTEC / OP COCA COLA', tipo:'Operativo', dia:'Mié2', dur:0, hPlan:'', nota:'Cierre de ventana operativa del MOP', cuad:'P' },
+  ]},
+  { id:'g5d', title:'9. Forro de Escape — Jueves 18 Jun', color:'g-green', items:[
+    { id:'9.01', desc:'Instalación de forro de escape — planta de emergencia 300 kW', resp:'MAXTEC', tipo:'Operativo', dia:'Jue', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'9.02', desc:'Verificación de hermeticidad y fijación de forro de escape', resp:'MAXTEC', tipo:'Operativo', dia:'Jue', dur:0, hPlan:'', nota:'', cuad:'P' },
+    { id:'9.03', desc:'Prueba final de operación con forro instalado', resp:'MAXTEC / GHPOWER', tipo:'Operativo', dia:'Jue', dur:0, hPlan:'', nota:'', cuad:'P' },
+  ]},
+];
+
+var uidCounter = 1;
+function newUid(){ return 'u'+(uidCounter++); }
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+function toMinsLocal(t){ if(!t||!t.includes(':'))return null; var p=t.split(':').map(Number); return p[0]*60+p[1]; }
+// Expose to window for Firebase access
+window._groups = groups;
+window._fallas = fallas;
+
+groups.forEach(function(g){
+  g.items.forEach(function(item){
+    item._uid = newUid();
+    item.state = 'none';
+    item.hReal = '';
+    if(!item.pct) item.pct = 0;
+    // Compute hIni = hPlan minus duration
+    if(item.hPlan && item.dur){
+      var planMins = (function(t){if(!t||!t.includes(':'))return null;var p=t.split(':').map(Number);return p[0]*60+p[1];})(item.hPlan);
+      if(planMins !== null){
+        var iniMins = planMins - item.dur;
+        if(iniMins < 0) iniMins += 24*60;
+        item.hIni = pad2(Math.floor(iniMins/60)%24)+':'+pad2(iniMins%60);
+      }
+    }
+    if(!item.hIni) item.hIni = '';
+  });
+});
+
+// ── VENTANA CLOCK ──
+// Sáb 07:00 to Dom 13:50 = 30h50m = 1850 mins
+// ── VENTANA: Sáb 13 Jun 2026 07:00 → Dom 14 Jun 2026 13:50 ──
+var WIN_OPEN  = new Date(2026, 5, 12, 18, 0, 0);  // Viernes 12 Jun 18:00
+var WIN_CLOSE = new Date(2026, 5, 13, 23, 59, 0); // Sábado 13 Jun 22:50 — ítem 4.32
+var WIN_TOTAL_MS = WIN_CLOSE - WIN_OPEN; // ~110,999,999 ms
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function updateClock(){
+  var now = new Date();
+  var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  var _months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var _days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  document.getElementById('clock').textContent = _days[now.getDay()]+' '+now.getDate()+' '+_months[now.getMonth()]+' '+now.getFullYear();
+
+  var fill   = document.getElementById('vfill');
+  var velap  = document.getElementById('velap');
+  var vpct   = document.getElementById('vpct');
+  var cdVal  = document.getElementById('countdown-val');
+  var cdLbl  = document.getElementById('countdown-label');
+  var cdBar  = document.getElementById('countdown-bar');
+
+  var msToOpen  = WIN_OPEN  - now;
+  var msToClose = WIN_CLOSE - now;
+  var elapsed   = now - WIN_OPEN;
+
+  // ── ANTES de la ventana ──
+  if(msToOpen > 0){
+    var totalSec = Math.floor(msToOpen/1000);
+    var dd = Math.floor(totalSec/86400);
+    var hh = Math.floor((totalSec%86400)/3600);
+    var mm = Math.floor((totalSec%3600)/60);
+    var ss = totalSec%60;
+
+    fill.style.width='0%'; vpct.textContent='0%';
+    velap.textContent = 'Hoy · '+pad2(now.getHours())+':'+pad2(now.getMinutes())+':'+pad2(now.getSeconds());
+    velap.style.color = 'var(--text-dim)';
+
+    cdBar.style.borderColor='var(--border)';
+    var parts = '';
+    if(dd>0) parts += '<div class="cd-block"><div class="cd-num">'+dd+'</div><div class="cd-lbl">días</div></div><div class="cd-sep">:</div>';
+    parts += '<div class="cd-block"><div class="cd-num">'+pad2(hh)+'</div><div class="cd-lbl">horas</div></div>';
+    parts += '<div class="cd-sep">:</div>';
+    parts += '<div class="cd-block"><div class="cd-num">'+pad2(mm)+'</div><div class="cd-lbl">min</div></div>';
+    parts += '<div class="cd-sep">:</div>';
+    parts += '<div class="cd-block"><div class="cd-num">'+pad2(ss)+'</div><div class="cd-lbl">seg</div></div>';
+    cdVal.innerHTML = parts;
+    cdLbl.textContent = 'para el inicio de la ventana operativa — Vie 12 Jun 2026 18:00';
+    cdLbl.style.color = 'var(--text-dim)';
+    return;
+  }
+
+  // ── DENTRO de la ventana ──
+  if(msToClose > 0){
+    var pct = Math.max(0,Math.min(100,Math.round((elapsed/WIN_TOTAL_MS)*100)));
+    var elMin = Math.floor(elapsed/60000);
+    var elH = Math.floor(elMin/60), elM = elMin%60;
+
+    fill.style.width=pct+'%'; vpct.textContent=pct+'%';
+    var col = pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--green)';
+    velap.style.color=col;
+    fill.style.background=pct>90?'linear-gradient(90deg,var(--red),#e74c3c)':pct>70?'linear-gradient(90deg,var(--yellow),#e6900a)':'linear-gradient(90deg,var(--green),#00a851)';
+    velap.textContent = '🟢 En ventana — '+elH+'h '+elM+'m transcurridos';
+
+    // Countdown: tiempo restante para cierre
+    var remSec = Math.floor(msToClose/1000);
+    var rH = Math.floor(remSec/3600), rM = Math.floor((remSec%3600)/60), rS = remSec%60;
+    var parts2 = '<div class="cd-block"><div class="cd-num">'+pad2(rH)+'</div><div class="cd-lbl">horas</div></div>';
+    parts2 += '<div class="cd-sep">:</div>';
+    parts2 += '<div class="cd-block"><div class="cd-num">'+pad2(rM)+'</div><div class="cd-lbl">min</div></div>';
+    parts2 += '<div class="cd-sep">:</div>';
+    parts2 += '<div class="cd-block"><div class="cd-num">'+pad2(rS)+'</div><div class="cd-lbl">seg</div></div>';
+    cdVal.innerHTML = parts2;
+    cdLbl.textContent = 'restantes en ventana operativa';
+    cdLbl.style.color = pct>90?'var(--red)':pct>70?'var(--yellow)':'var(--green)';
+    cdBar.style.borderColor = col;
+    return;
+  }
+
+  // ── VENTANA CERRADA ──
+  fill.style.width='100%'; fill.style.background='var(--red)';
+  vpct.textContent='100%';
+  velap.textContent='🔴 Ventana cerrada'; velap.style.color='var(--red)';
+  cdVal.innerHTML='<span style="font-family:var(--sans);font-size:18px;font-weight:900;color:var(--red)">CERRADA</span>';
+  cdLbl.textContent='La ventana operativa del Shutdown finalizó el Sáb 13 Jun 2026 a las 23:59 (ítem 4.32)';
+  cdLbl.style.color='var(--red)';
+  cdBar.style.borderColor='var(--red)';
+}
+updateClock(); setInterval(updateClock, 1000);
+
+// ── FALLAS ──
+var fallas = []; var fallaId = 0;
+function renderFallas(){
+  var list = document.getElementById('fallas-list'); list.innerHTML='';
+  fallas.forEach(function(f){
+    var row = document.createElement('div'); row.className='falla-row';
+    row.innerHTML='<input class="finp" value="'+(f.itemId||'')+'" placeholder="Ítem" oninput="updateFalla('+f._id+',\'itemId\',this.value)">'+
+      '<input class="finp" value="'+(f.desc||'')+'" placeholder="Descripción" oninput="updateFalla('+f._id+',\'desc\',this.value)">'+
+      '<select class="fsel" onchange="updateFalla('+f._id+',\'status\',this.value)">'+
+        '<option'+(f.status==='Pendiente'?' selected':'')+'>Pendiente</option>'+
+        '<option'+(f.status==='En revisión'?' selected':'')+'>En revisión</option>'+
+        '<option'+(f.status==='Resuelta'?' selected':'')+'>Resuelta</option>'+
+        '<option'+(f.status==='Escalada'?' selected':'')+'>Escalada</option>'+
+      '</select>'+
+      '<button class="btn-df" onclick="removeFalla('+f._id+')">✕</button>';
+    list.appendChild(row);
+  });
+}
+function updateFalla(id,key,val){ var f=fallas.find(function(x){return x._id===id;}); if(f)f[key]=val; }
+function addFalla(itemId,desc){ fallas.push({_id:fallaId++,itemId:itemId||'',desc:desc||'',status:'Pendiente'}); renderFallas(); window.fbSaveFallas&&window.fbSaveFallas(); }
+function removeFalla(id){ fallas=fallas.filter(function(f){return f._id!==id;}); renderFallas(); window.fbSaveFallas&&window.fbSaveFallas(); }
+
+// ── RENDER ──
+var PCT_STEPS = [0, 15, 25, 50, 75, 90, 100];
+
+function cyclePct(item, btn){
+  var idx = PCT_STEPS.indexOf(item.pct||0);
+  var next = PCT_STEPS[(idx+1) % PCT_STEPS.length];
+  item.pct = next;
+  // Update button
+  btn.className = 'pct-btn pct-'+next;
+  btn.textContent = next > 0 ? next+'%' : '—';
+  // Update bar
+  var bar = document.getElementById('pctbar-'+item._uid);
+  if(bar) bar.style.width = next+'%';
+  // If 100% auto-mark as done
+  if(next === 100 && item.state !== 'done'){
+    var row = document.querySelector('.row[data-uid="'+item._uid+'"]');
+    if(row) cycleStateTo(row, item, 'done');
+  }
+  window.fbSaveActs && window.fbSaveActs();
+}
+
+function cycleStateTo(row, item, state){
+  item.state = state;
+  row.classList.remove('done','fail');
+  var ci = row.querySelector('.chk-inner');
+  if(state==='done'){row.classList.add('done');ci.textContent='✓';}
+  else if(state==='fail'){row.classList.add('fail');ci.textContent='✕';}
+  else ci.textContent='';
+}
+
+var container = document.getElementById('checklist');
+var prevDia = null;
+
+function buildRow(item){
+  var row = document.createElement('div');
+  var _rmap = {'Dom':' dom-row','Vie':' vie-row','Mié':' mie-row','Sáb':'','Lun':' lun-row','Mar':' mar-row','Mié2':' mie2-row','Jue':' jue-row'};
+  var comidaClass = item.tipo==='Descanso' ? ' comida-row' : '';
+  var domClass = _rmap[item.dia] || '';
+  var secClass = item.cuad==='S' ? ' secundaria' : '';
+  row.className = 'row'+(item.state==='done'?' done':item.state==='fail'?' fail':'')+domClass+secClass+comidaClass;
+  row.dataset.uid = item._uid;
+  var durTxt = item.dur > 0 ? fmtDur(item.dur) : '—';
+  var chkTxt = item.state==='done'?'✓':item.state==='fail'?'✕':'';
+  var _dmap = {'Dom':'badge-dom','Vie':'badge-vie','Mié':'badge-mie','Sáb':'badge-sab','Lun':'badge-lun','Mar':'badge-mar','Mié2':'badge-mie2','Jue':'badge-jue'};
+  var _tmap = {'Dom':'Dom 14','Vie':'Vie 12','Mié':'Mié 10','Sáb':'Sáb 13','Lun':'Lun 15','Mar':'Mar 16','Mié2':'Mié 17','Jue':'Jue 18'};
+  var badgeClass = _dmap[item.dia] || 'badge-sab';
+  var badgeTxt   = _tmap[item.dia] || item.dia;
+
+  row.innerHTML =
+    '<div class="cell cell-num">'+item.id+'</div>'+
+    '<div class="cell cell-chk"><div class="chk"><span class="chk-inner">'+chkTxt+'</span></div></div>'+
+    '<div class="cell cell-desc">'+
+      '<textarea class="editable desc-txt" rows="2" style="min-height:30px">'+item.desc+'</textarea>'+
+    '</div>'+
+    '<div class="cell cell-resp"><input class="editable inp-resp" value="'+item.resp+'" style="text-align:center;font-size:9px;color:var(--text-dim)"></div>'+
+    '<div class="cell cell-fecha" style="flex-direction:column;gap:2px"><span class="'+badgeClass+'">'+badgeTxt+'</span><span class="'+(item.cuad==='S'?'badge-sec':'badge-pri')+'">'+(item.cuad==='S'?'SEC':'PRINC')+'</span></div>'+
+    '<div class="cell cell-dur">'+durTxt+'</div>'+
+    '<div class="cell cell-plan">'+(item.hIni||'—')+'</div>'+
+    '<div class="cell cell-plan" style="color:var(--green)">'+(item.hPlan||'—')+'</div>'+
+    '<div class="cell cell-real"><input class="inp-hora" value="'+item.hReal+'" placeholder="HH:MM"></div>'+
+    '<div class="cell cell-pct-wrap">'+
+      '<button class="pct-btn pct-'+(item.pct||0)+'" id="pctbtn-'+item._uid+'">'+
+        (item.pct&&item.pct>0?item.pct+'%':'—')+
+      '</button>'+
+      '<div class="pct-bar"><div class="pct-bar-fill" id="pctbar-'+item._uid+'" style="width:'+(item.pct||0)+'%"></div></div>'+
+    '</div>'+
+    '<div class="cell cell-act">'+
+      '<button class="btn-r btn-up">▲</button>'+
+      '<button class="btn-r btn-dn">▼</button>'+
+      '<button class="btn-r del btn-del">✕</button>'+
+    '</div>';
+
+  // Wire events via addEventListener — item is in closure scope
+  row.querySelector('.cell-chk').addEventListener('click', function(e){ e.stopPropagation(); cycleState(row,item); });
+  row.querySelector('.desc-txt').addEventListener('input', function(){ item.desc=this.value; });
+  row.querySelector('.desc-txt').addEventListener('click', function(e){ e.stopPropagation(); });
+  row.querySelector('.inp-resp').addEventListener('input', function(){ item.resp=this.value; });
+  row.querySelector('.inp-resp').addEventListener('click', function(e){ e.stopPropagation(); });
+  row.querySelector('.inp-hora').addEventListener('input', function(){ item.hReal=this.value; window.fbSaveActs&&window.fbSaveActs(); });
+  row.querySelector('.inp-hora').addEventListener('click', function(e){ e.stopPropagation(); });
+  row.querySelector('[id^="pctbtn-"]').addEventListener('click', function(e){ e.stopPropagation(); cyclePct(item,this); });
+  row.querySelector('.btn-up').addEventListener('click', function(e){ e.stopPropagation(); moveItem(item,'up'); });
+  row.querySelector('.btn-dn').addEventListener('click', function(e){ e.stopPropagation(); moveItem(item,'down'); });
+  row.querySelector('.btn-del').addEventListener('click', function(e){ e.stopPropagation(); deleteItem(item); });
+  row.addEventListener('click', function(e){ if(['TEXTAREA','INPUT','BUTTON'].includes(e.target.tagName))return; cycleState(row,item); });
+  return row;
+}
+
+function renderAll(){
+  container.innerHTML = '';
+  prevDia = null;
+  var sabShown = false;
+  groups.forEach(function(g){
+    var gDiv = document.createElement('div');
+    gDiv.className = 'group '+g.color;
+    gDiv.dataset.gid = g.id;
+
+    var tDiv = document.createElement('div');
+    tDiv.className = 'group-title';
+    tDiv.innerHTML =
+      '<input class="group-title-edit gt-inp" value="'+g.title+'">'+
+      '<div class="group-title-btns">'+
+        '<button class="btn-g btn-gup">▲</button>'+
+        '<button class="btn-g btn-gdn">▼</button>'+
+      '</div>';
+    tDiv.querySelector('.gt-inp').addEventListener('input', function(){ g.title=this.value; });
+    tDiv.querySelector('.gt-inp').addEventListener('click', function(e){ e.stopPropagation(); });
+    tDiv.querySelector('.btn-gup').addEventListener('click', function(){ moveGroup(g,'up'); });
+    tDiv.querySelector('.btn-gdn').addEventListener('click', function(){ moveGroup(g,'down'); });
+    gDiv.appendChild(tDiv);
+
+    g.items.forEach(function(item){
+        // Day separators
+      if(item.id === '3.03'){
+        var sep = document.createElement('div'); sep.className = 'day-sep';
+        sep.innerHTML = '<div class="day-sep-line"></div><div class="day-sep-label" style="color:#c04a00">🔴 INICIO SHUTDOWN — VIERNES 12 DE JUNIO 2026 · 18:00 H</div><div class="day-sep-line"></div>';
+        gDiv.appendChild(sep);
+      } else if(item.dia === 'Sáb' && prevDia === 'Vie' && !sabShown){
+        sabShown = true;
+        var sep = document.createElement('div'); sep.className = 'day-sep';
+        sep.innerHTML = '<div class="day-sep-line"></div><div class="day-sep-label" style="color:#0056b8">🌙 Cambio de día — Sábado 13 de Junio 2026</div><div class="day-sep-line"></div>';
+        gDiv.appendChild(sep);
+      }
+      prevDia = item.dia;
+      gDiv.appendChild(buildRow(item));
+      if(item.nota){
+        var nb = document.createElement('div');
+        nb.className = 'nota-row';
+        nb.textContent = item.nota;
+        gDiv.appendChild(nb);
+      }
+    });
+
+    var addBar = document.createElement('div');
+    addBar.className = 'add-bar';
+    addBar.innerHTML = '<button class="btn-add">+ Agregar actividad</button>';
+    addBar.querySelector('.btn-add').addEventListener('click', function(){ addItem(g.id); });
+    gDiv.appendChild(addBar);
+    container.appendChild(gDiv);
+  });
+  updateStats();
+}
+
+renderAll();
+
+// Expose functions after they're defined
+window._renderFallas = renderFallas;
+window._updateAll = updateStats;
+
+// ── ITEM ACTIONS ──
+function findItem(item){
+  for(var gi=0;gi<groups.length;gi++){
+    var idx=groups[gi].items.indexOf(item);
+    if(idx>=0) return {g:groups[gi],gi:gi,i:idx};
+  }
+  return null;
+}
+function moveItem(item,dir){
+  var f=findItem(item); if(!f)return;
+  var g=f.g,i=f.i,gi=f.gi;
+  if(dir==='up'&&i===0){ if(gi===0)return; g.items.splice(i,1); groups[gi-1].items.push(item); }
+  else if(dir==='down'&&i===g.items.length-1){ if(gi===groups.length-1)return; g.items.splice(i,1); groups[gi+1].items.unshift(item); }
+  else { var ni=dir==='up'?i-1:i+1; g.items.splice(i,1); g.items.splice(ni,0,item); }
+  renderAll();
+}
+function deleteItem(item){
+  if(!confirm('¿Eliminar "'+item.desc.substring(0,40)+'..."?'))return;
+  var f=findItem(item); if(!f)return;
+  f.g.items.splice(f.i,1); renderAll();
+}
+function addItem(gid){
+  var g=groups.find(function(x){return x.id===gid;}); if(!g)return;
+  var uid=newUid();
+  g.items.push({_uid:uid,id:'N',desc:'Nueva actividad',resp:'MAXTEC',tipo:'Operativo',dia:'Sáb',dur:0,hPlan:'',hIni:'',nota:'',cuad:'P',pct:0,state:'none',hReal:''});
+  renderAll();
+  setTimeout(function(){
+    var el=container.querySelector('[data-uid="'+uid+'"] textarea');
+    if(el){el.focus();el.select();}
+  },100);
+}
+function moveGroup(g,dir){
+  var i=groups.indexOf(g); if(i<0)return;
+  if(dir==='up'&&i===0)return; if(dir==='down'&&i===groups.length-1)return;
+  var ni=dir==='up'?i-1:i+1; groups.splice(i,1); groups.splice(ni,0,g); renderAll();
+}
+
+// ── STATE ──
+function cycleState(row,item){
+  var next=item.state==='none'?'done':item.state==='done'?'fail':'none';
+  item.state=next; row.classList.remove('done','fail');
+  var ci=row.querySelector('.chk-inner');
+  if(next==='done'){row.classList.add('done');ci.textContent='✓';}
+  else if(next==='fail'){row.classList.add('fail');ci.textContent='✕';
+    if(!fallas.find(function(f){return f.itemId===item.id;})) addFalla(item.id,item.desc);
+  } else {
+    ci.textContent='';
+    var fi=fallas.findIndex(function(f){return f.itemId===item.id&&f.desc===item.desc;});
+    if(fi>=0){fallas.splice(fi,1);renderFallas();}
+  }
+  updateStats();
+  window.fbSaveActs && window.fbSaveActs();
+}
+
+function updateStats(){
+  var all=groups.reduce(function(a,g){return a.concat(g.items);},[]);
+  var done=all.filter(function(i){return i.state==='done';}).length;
+  var fail=all.filter(function(i){return i.state==='fail';}).length;
+  var pend=all.length-done-fail;
+  var pct=all.length?Math.round((done/all.length)*100):0;
+  document.getElementById('st-total').textContent=all.length;
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('st-pend').textContent=pend;
+  document.getElementById('st-fail').textContent=fail;
+  document.getElementById('st-pct').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ppct').textContent=pct+'%';
+  var pf=document.getElementById('pfill');
+  pf.className='progress-fill '+(pct>=80?'good':pct>=50?'warn':'bad');
+  document.getElementById('ppct').style.color=pct>=80?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+}
+
+// ── SAVE / LOAD ──
+function saveReport(){
+  var report={
+    meta:{ref:'MXT-MOP-011',rev:'08',fecha:'13-14/06/2026',generado:new Date().toISOString()},
+    groups:groups.map(function(g){return{id:g.id,title:g.title,color:g.color,
+      items:g.items.map(function(i){return{_uid:i._uid,id:i.id,desc:i.desc,resp:i.resp,tipo:i.tipo,dia:i.dia,dur:i.dur,hPlan:i.hPlan||'',nota:i.nota||'',estado:i.state,hReal:i.hReal||''};})
+    };}),
+    fallas:fallas.map(function(f){return{itemId:f.itemId,desc:f.desc,status:f.status};}),
+  };
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+  a.download='MXT-MOP-011-REV08_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+
+function loadReport(event){
+  var file=event.target.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(data.groups){
+        groups.length=0;
+        data.groups.forEach(function(g){
+          var items=g.items.map(function(i){return Object.assign({},i,{state:i.estado||'none',hReal:i.hReal||'',hIni:i.hIni||'',pct:i.pct||0,cuad:i.cuad||'P',_uid:i._uid||newUid()});});
+          groups.push({id:g.id,title:g.title,color:g.color,items:items});
+        });
+        renderAll();
+      }
+      if(data.fallas){fallas.length=0;fallaId=0;data.fallas.forEach(function(f){fallas.push({_id:fallaId++,itemId:f.itemId,desc:f.desc,status:f.status});});renderFallas();}
+      updateStats(); alert('Reporte cargado.');
+    }catch(err){alert('Error: '+err.message);}
+  };
+  reader.readAsText(file); event.target.value='';
+}
+</script>
+</body>
+</html>
